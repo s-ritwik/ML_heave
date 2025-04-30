@@ -1,0 +1,11 @@
+hidden_sizes: [512,512]; sequence_length: 800; output_size: 160; x_seconds: 5; w: 20
+hidden_sizes: [512,512]; sequence_length: 800; output_size: 200; x_seconds: 5; w: 20
+hidden_sizes: [512,512]; sequence_length: 800; output_size: 120; x_seconds: 6; w: 25
+hidden_sizes: [512,512]; sequence_length: 800; output_size: 160; x_seconds: 6; w: 25
+hidden_sizes: [512,512]; sequence_length: 800; output_size: 200; x_seconds: 6; w: 25
+hidden_sizes: [512,512]; sequence_length: 900; output_size: 120; x_seconds: 4; w: 15
+hidden_sizes: [512,512]; sequence_length: 900; output_size: 160; x_seconds: 5; w: 20
+hidden_sizes: [512,512]; sequence_length: 900; output_size: 200; x_seconds: 4; w: 15
+hidden_sizes: [512,512]; sequence_length: 1000; output_size: 120; x_seconds: 5; w: 20
+hidden_sizes: [512,512]; sequence_length: 1000; output_size: 160; x_seconds: 5; w: 20
+hidden_sizes: [512,512]; sequence_length: 1000; output_size: 200; x_seconds: 5; w: 20

@@ -1,0 +1,10 @@
+hidden_sizes: [1024,128]; sequence_length: 1000; output_size: 120; x_seconds: 6; w: 25
+hidden_sizes: [1024,128]; sequence_length: 1000; output_size: 160; x_seconds: 6; w: 25
+hidden_sizes: [1024,128]; sequence_length: 1000; output_size: 200; x_seconds: 6; w: 25
+hidden_sizes: [128,128,128,128]; sequence_length: 800; output_size: 120; x_seconds: 5; w: 25
+hidden_sizes: [768,512]; sequence_length: 800; output_size: 120; x_seconds: 5; w: 25
+hidden_sizes: [768,512]; sequence_length: 800; output_size: 160; x_seconds: 5; w: 25
+hidden_sizes: [768,512]; sequence_length: 1000; output_size: 120; x_seconds: 5; w: 25
+hidden_sizes: [512,256]; sequence_length: 800; output_size: 120; x_seconds: 5; w: 25
+hidden_sizes: [800,120]; sequence_length: 800; output_size: 120; x_seconds: 5; w: 25
+hidden_sizes: [800,160]; sequence_length: 800; output_size: 160; x_seconds: 5; w: 25

@@ -1,0 +1,5 @@
+hidden_sizes: [256,128,64]; sequence_length: 1000; output_size: 120; x_seconds: 4; w: 100
+hidden_sizes: [256,128,64]; sequence_length: 1000; output_size: 120; x_seconds: 5; w: 100
+hidden_sizes: [512,512]; sequence_length: 1000; output_size: 120; x_seconds: 4; w: 100
+hidden_sizes: [512,512]; sequence_length: 1000; output_size: 120; x_seconds: 5; w: 100
+
