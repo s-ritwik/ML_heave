@@ -1,0 +1,402 @@
+Model: D1Gru_6_512_512.pth
+Hidden Sizes: [512, 512]
+Sequence Length: 600
+Output Size: 120
+x_seconds: 4
+w (weight): 15
+Average Prediction Time: 0.0382 seconds
+Average Absolute Error for the first 3 seconds: 1.1159 cm
+Average Absolute Error for the first 4 seconds: 1.3881 cm
+Average Absolute Error for the first 5 seconds: 1.6301 cm
+Total Average Absolute Error: 2.0861 cm
+------------------------------------------------------------
+Model: D1Gru_8_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 160
+x_seconds: 5
+w (weight): 40
+Average Prediction Time: 0.0070 seconds
+Average Absolute Error for the first 3 seconds: 0.8910 cm
+Average Absolute Error for the first 4 seconds: 1.3019 cm
+Average Absolute Error for the first 5 seconds: 1.5680 cm
+Total Average Absolute Error: 2.9428 cm
+------------------------------------------------------------
+Model: D1Gru_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 120
+x_seconds: 5
+w (weight): 40
+Average Prediction Time: 0.0070 seconds
+Average Absolute Error for the first 3 seconds: 0.8209 cm
+Average Absolute Error for the first 4 seconds: 1.1732 cm
+Average Absolute Error for the first 5 seconds: 1.4229 cm
+Total Average Absolute Error: 1.7909 cm
+------------------------------------------------------------
+Model: D1Gru_6_512_512.pth
+Hidden Sizes: [512, 512]
+Sequence Length: 800
+Output Size: 120
+x_seconds: 4
+w (weight): 15
+Average Prediction Time: 0.0155 seconds
+Average Absolute Error for the first 3 seconds: 1.1644 cm
+Average Absolute Error for the first 4 seconds: 1.6079 cm
+Average Absolute Error for the first 5 seconds: 1.9215 cm
+Total Average Absolute Error: 2.4321 cm
+------------------------------------------------------------
+Model: D1Gru_8_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 160
+x_seconds: 5
+w (weight): 20
+Average Prediction Time: 0.0070 seconds
+Average Absolute Error for the first 3 seconds: 1.0386 cm
+Average Absolute Error for the first 4 seconds: 1.3118 cm
+Average Absolute Error for the first 5 seconds: 1.5461 cm
+Total Average Absolute Error: 2.7537 cm
+------------------------------------------------------------
+Model: D1Gru_10_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 200
+x_seconds: 5
+w (weight): 20
+Average Prediction Time: 0.0070 seconds
+Average Absolute Error for the first 3 seconds: 1.2902 cm
+Average Absolute Error for the first 4 seconds: 1.5722 cm
+Average Absolute Error for the first 5 seconds: 1.8376 cm
+Total Average Absolute Error: 4.0026 cm
+------------------------------------------------------------
+Model: D1Gru_8_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 160
+x_seconds: 5
+w (weight): 40
+Average Prediction Time: 0.0071 seconds
+Average Absolute Error for the first 3 seconds: 0.9224 cm
+Average Absolute Error for the first 4 seconds: 1.3264 cm
+Average Absolute Error for the first 5 seconds: 1.5978 cm
+Total Average Absolute Error: 2.9322 cm
+------------------------------------------------------------
+Model: D1Gru_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 120
+x_seconds: 5
+w (weight): 40
+Average Prediction Time: 0.0071 seconds
+Average Absolute Error for the first 3 seconds: 1.2755 cm
+Average Absolute Error for the first 4 seconds: 1.5781 cm
+Average Absolute Error for the first 5 seconds: 1.8310 cm
+Total Average Absolute Error: 2.2597 cm
+------------------------------------------------------------
+Model: D1Gru_8_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 160
+x_seconds: 5
+w (weight): 20
+Average Prediction Time: 0.0072 seconds
+Average Absolute Error for the first 3 seconds: 0.8745 cm
+Average Absolute Error for the first 4 seconds: 1.2100 cm
+Average Absolute Error for the first 5 seconds: 1.4499 cm
+Total Average Absolute Error: 2.6706 cm
+------------------------------------------------------------
+Model: D1Gru_10_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 200
+x_seconds: 5
+w (weight): 20
+Average Prediction Time: 0.0073 seconds
+Average Absolute Error for the first 3 seconds: 0.9850 cm
+Average Absolute Error for the first 4 seconds: 1.4210 cm
+Average Absolute Error for the first 5 seconds: 1.6734 cm
+Total Average Absolute Error: 3.7131 cm
+------------------------------------------------------------
+Model: D1Gru_6_512_256_128.pth
+Hidden Sizes: [512, 256, 128]
+Sequence Length: 600
+Output Size: 120
+x_seconds: 5
+w (weight): 20
+Average Prediction Time: 0.0103 seconds
+Average Absolute Error for the first 3 seconds: 6.0901 cm
+Average Absolute Error for the first 4 seconds: 6.1850 cm
+Average Absolute Error for the first 5 seconds: 6.1518 cm
+Total Average Absolute Error: 6.9065 cm
+------------------------------------------------------------
+Model: D1Gru_6_512_256_128.pth
+Hidden Sizes: [512, 256, 128]
+Sequence Length: 800
+Output Size: 120
+x_seconds: 5
+w (weight): 20
+Average Prediction Time: 0.0134 seconds
+Average Absolute Error for the first 3 seconds: 2.0341 cm
+Average Absolute Error for the first 4 seconds: 2.4145 cm
+Average Absolute Error for the first 5 seconds: 3.0979 cm
+Total Average Absolute Error: 3.7608 cm
+------------------------------------------------------------
+Model: D1Gru_8_512_256_128.pth
+Hidden Sizes: [512, 256, 128]
+Sequence Length: 800
+Output Size: 160
+x_seconds: 5
+w (weight): 20
+Average Prediction Time: 0.0134 seconds
+Average Absolute Error for the first 3 seconds: 1.1784 cm
+Average Absolute Error for the first 4 seconds: 1.5817 cm
+Average Absolute Error for the first 5 seconds: 1.8656 cm
+Total Average Absolute Error: 3.3667 cm
+------------------------------------------------------------
+Model: D1Gru_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 100
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0012 seconds
+Average Absolute Error for the first 3 seconds: 0.9148 cm
+Average Absolute Error for the first 4 seconds: 1.3754 cm
+Average Absolute Error for the first 5 seconds: 1.6873 cm
+Total Average Absolute Error: 2.0733 cm
+------------------------------------------------------------
+Model: D1Gru_50_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0226 seconds
+Average Absolute Error for the first 3 seconds: 1.3271 cm
+Average Absolute Error for the first 4 seconds: 1.6894 cm
+Average Absolute Error for the first 5 seconds: 1.9631 cm
+Total Average Absolute Error: 2.5014 cm
+Video File: brute_results/D1Gru_50_6_256_128_64.pth_predictions.mp4
+------------------------------------------------------------
+Model: D1Gru_55_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1100
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0210 seconds
+Average Absolute Error for the first 3 seconds: 1.4241 cm
+Average Absolute Error for the first 4 seconds: 1.7171 cm
+Average Absolute Error for the first 5 seconds: 2.0763 cm
+Total Average Absolute Error: 2.5331 cm
+Video File: brute_results/D1Gru_55_6_256_128_64.pth_predictions.mp4
+------------------------------------------------------------
+Model: D1Gru_55_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1100
+Output Size: 120
+x_seconds: 5
+w (weight): 100
+Average Prediction Time: 0.0181 seconds
+Average Absolute Error for the first 3 seconds: 1.3412 cm
+Average Absolute Error for the first 4 seconds: 1.6941 cm
+Average Absolute Error for the first 5 seconds: 1.9625 cm
+Total Average Absolute Error: 2.4033 cm
+Video File: brute_results/D1Gru_55_6_256_128_64.pth_predictions.mp4
+------------------------------------------------------------
+Model: D1Gru_50_6_512_512.pth
+Hidden Sizes: [512, 512]
+Sequence Length: 1000
+Output Size: 120
+x_seconds: 5
+w (weight): 100
+Average Prediction Time: 0.0444 seconds
+Average Absolute Error for the first 3 seconds: 1.8381 cm
+Average Absolute Error for the first 4 seconds: 2.1972 cm
+Average Absolute Error for the first 5 seconds: 2.6920 cm
+Total Average Absolute Error: 3.1967 cm
+Video File: brute_results/D1Gru_50_6_512_512.pth_predictions.mp4
+------------------------------------------------------------
+Model: D1Gru_60_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1200
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0223 seconds
+Average Absolute Error for the first 3 seconds: 1.0743 cm
+Average Absolute Error for the first 4 seconds: 1.5502 cm
+Average Absolute Error for the first 5 seconds: 1.8080 cm
+Total Average Absolute Error: 2.1956 cm
+Video File: brute_results/D1Gru_60_6_256_128_64.pth_predictions.mp4
+------------------------------------------------------------
+Model: D1Gru_60_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1200
+Output Size: 120
+x_seconds: 5
+w (weight): 100
+Average Prediction Time: 0.0224 seconds
+Average Absolute Error for the first 3 seconds: 1.2402 cm
+Average Absolute Error for the first 4 seconds: 1.5744 cm
+Average Absolute Error for the first 5 seconds: 1.8855 cm
+Total Average Absolute Error: 2.3462 cm
+Video File: brute_results/D1Gru_60_6_256_128_64.pth_predictions.mp4
+------------------------------------------------------------
+Model: D1Gru_60_6_512_512.pth
+Hidden Sizes: [512, 512]
+Sequence Length: 1200
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0234 seconds
+Average Absolute Error for the first 3 seconds: 1.2728 cm
+Average Absolute Error for the first 4 seconds: 1.6011 cm
+Average Absolute Error for the first 5 seconds: 2.0446 cm
+Total Average Absolute Error: 2.5958 cm
+Video File: brute_results/D1Gru_60_6_512_512.pth_predictions.mp4
+------------------------------------------------------------
+Model: D1Gru_60_6_512_512.pth
+Hidden Sizes: [512, 512]
+Sequence Length: 1200
+Output Size: 120
+x_seconds: 5
+w (weight): 100
+Average Prediction Time: 0.0541 seconds
+Average Absolute Error for the first 3 seconds: 1.2013 cm
+Average Absolute Error for the first 4 seconds: 1.5511 cm
+Average Absolute Error for the first 5 seconds: 1.9990 cm
+Total Average Absolute Error: 2.5695 cm
+Video File: brute_results/D1Gru_60_6_512_512.pth_predictions.mp4
+------------------------------------------------------------
+Model: noisy_D1Gru_50_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0089 seconds
+Average Absolute Error for the first 3 seconds: 2.1097 cm
+Average Absolute Error for the first 4 seconds: 2.4118 cm
+Average Absolute Error for the first 5 seconds: 2.9235 cm
+Total Average Absolute Error: 3.5115 cm
+Video File: brute_results/noisy_D1Gru_50_6_256_128_64.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
+Model: noisy_D1Gru_40_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 800
+Output Size: 120
+x_seconds: 5
+w (weight): 100
+Average Prediction Time: 0.0072 seconds
+Average Absolute Error for the first 3 seconds: 1.9823 cm
+Average Absolute Error for the first 4 seconds: 2.4010 cm
+Average Absolute Error for the first 5 seconds: 3.0511 cm
+Total Average Absolute Error: 3.6599 cm
+Video File: brute_results/noisy_D1Gru_40_6_256_128_64.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
+Model: noisy_D1Gru_50_6_512_512.pth
+Hidden Sizes: [512, 512]
+Sequence Length: 1000
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0197 seconds
+Average Absolute Error for the first 3 seconds: 2.5573 cm
+Average Absolute Error for the first 4 seconds: 3.0227 cm
+Average Absolute Error for the first 5 seconds: 3.6110 cm
+Total Average Absolute Error: 4.1679 cm
+Video File: brute_results/noisy_D1Gru_50_6_512_512.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
+Model: noisy_D1Gru_40_6_512_512.pth
+Hidden Sizes: [512, 512]
+Sequence Length: 800
+Output Size: 120
+x_seconds: 5
+w (weight): 100
+Average Prediction Time: 0.0159 seconds
+Average Absolute Error for the first 3 seconds: 2.5669 cm
+Average Absolute Error for the first 4 seconds: 3.0423 cm
+Average Absolute Error for the first 5 seconds: 3.6904 cm
+Total Average Absolute Error: 4.2591 cm
+Video File: brute_results/noisy_D1Gru_40_6_512_512.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
+Model: noisy_500epochs_D1Gru_50_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0068 seconds
+Average Absolute Error for the first 3 seconds: 2.1240 cm
+Average Absolute Error for the first 4 seconds: 2.3583 cm
+Average Absolute Error for the first 5 seconds: 2.8454 cm
+Total Average Absolute Error: 3.4628 cm
+Video File: brute_results/noisy_500epochs_D1Gru_50_6_256_128_64.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
+Model: noisy_500epochs_D1Gru_40_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 800
+Output Size: 120
+x_seconds: 5
+w (weight): 100
+Average Prediction Time: 0.0055 seconds
+Average Absolute Error for the first 3 seconds: 2.0620 cm
+Average Absolute Error for the first 4 seconds: 2.4656 cm
+Average Absolute Error for the first 5 seconds: 3.1215 cm
+Total Average Absolute Error: 3.8028 cm
+Video File: brute_results/noisy_500epochs_D1Gru_40_6_256_128_64.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
+Model: noisy_500epochs_D1Gru_50_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 1000
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0068 seconds
+Average Absolute Error for the first 3 seconds: 2.0670 cm
+Average Absolute Error for the first 4 seconds: 2.3332 cm
+Average Absolute Error for the first 5 seconds: 2.8737 cm
+Total Average Absolute Error: 3.5109 cm
+Video File: brute_results/noisy_500epochs_D1Gru_50_6_256_128_64.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
+Model: noisy_500epochs_D1Gru_40_6_256_128_64.pth
+Hidden Sizes: [256, 128, 64]
+Sequence Length: 800
+Output Size: 120
+x_seconds: 5
+w (weight): 100
+Average Prediction Time: 0.0055 seconds
+Average Absolute Error for the first 3 seconds: 2.1174 cm
+Average Absolute Error for the first 4 seconds: 2.4608 cm
+Average Absolute Error for the first 5 seconds: 3.0546 cm
+Total Average Absolute Error: 3.6174 cm
+Video File: brute_results/noisy_500epochs_D1Gru_40_6_256_128_64.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
+Model: noisy_500epochs_D1Gru_50_6_512_512.pth
+Hidden Sizes: [512, 512]
+Sequence Length: 1000
+Output Size: 120
+x_seconds: 4
+w (weight): 100
+Average Prediction Time: 0.0194 seconds
+Average Absolute Error for the first 3 seconds: 2.4466 cm
+Average Absolute Error for the first 4 seconds: 2.9067 cm
+Average Absolute Error for the first 5 seconds: 3.5011 cm
+Total Average Absolute Error: 4.0620 cm
+Video File: brute_results/noisy_500epochs_D1Gru_50_6_512_512.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
+Model: noisy_500epochs_D1Gru_40_6_512_512.pth
+Hidden Sizes: [512, 512]
+Sequence Length: 800
+Output Size: 120
+x_seconds: 5
+w (weight): 100
+Average Prediction Time: 0.0157 seconds
+Average Absolute Error for the first 3 seconds: 2.6439 cm
+Average Absolute Error for the first 4 seconds: 3.1820 cm
+Average Absolute Error for the first 5 seconds: 3.8946 cm
+Total Average Absolute Error: 4.5190 cm
+Video File: brute_results/noisy_500epochs_D1Gru_40_6_512_512.pth_noisy_predictions_and_errors.mp4
+------------------------------------------------------------
