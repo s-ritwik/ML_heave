@@ -39,5 +39,4 @@ Contains input datasets for heave motion in sequential format suitable for time-
 Clone the repo and install tf and torch
 
 ```bash
-git clone <your_repo_url>
-
+git clone https://github.com/s-ritwik/ML_heave.git
