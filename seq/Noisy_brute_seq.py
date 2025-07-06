@@ -75,7 +75,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"Using device: {device}")
 
 # Load and preprocess training data
-def load_data(file_list, data_dir='train_data_normalised'):
+def load_data(file_list, data_dir='train_data_normalised_mocap'):
     data = []
     for file_name in file_list:
         file_path = os.path.join(data_dir, file_name)
@@ -84,7 +84,7 @@ def load_data(file_list, data_dir='train_data_normalised'):
     return np.array(data)
 
 # Load test data
-test_file_path = 'train_data_normalised/D1H3_normalised.csv'
+test_file_path = 'train_data_normalised_mocap/D1H3_normalised.csv'
 test_data = pd.read_csv(test_file_path, header=None).iloc[:, 0].values
 meters_to_cm = 25  # Conversion factor
 
