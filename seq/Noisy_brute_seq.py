@@ -17,12 +17,12 @@ os.makedirs(model_dir, exist_ok=True)
 plot_dir = 'noisyprediction_videos'
 os.makedirs(plot_dir, exist_ok=True)
 # Specify the GPU index (0 or 1)
-gpu_index = 1  # Set to 1 if you want to use the second GPU
+gpu_index = 0  # Set to 1 if you want to use the second GPU
 
 # Set the environment variable to specify the GPU
 os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_index)
 # Read model configurations from file
-config_file_path = 'model_configs_seq.txt'
+config_file_path = 'model_configs_seq2.txt'
 with open(config_file_path, 'r') as f:
     model_configs = [line.strip() for line in f if line.strip()]
 
