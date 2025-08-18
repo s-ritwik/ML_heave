@@ -1,0 +1,7 @@
+================================================================================
+[2025-08-18 12:32:03] Starting model: noisy_D1_GRU_50_6_512_512
+Config: {"hidden_sizes": [512, 512], "sequence_length": 1000, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 64, "epochs": 400}
+Device: cuda | GPU_INDEX=0
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
