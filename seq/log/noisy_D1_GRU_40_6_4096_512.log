@@ -1,0 +1,31 @@
+================================================================================
+[2025-08-20 10:58:51] Starting model: noisy_D1_GRU_40_6_4096_512
+Config: {"hidden_sizes": [4096, 512], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 128, "epochs": 400}
+Device: cuda | GPU_INDEX=1
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+================================================================================
+[2025-08-20 11:01:22] Starting model: noisy_D1_GRU_40_6_4096_512
+Config: {"hidden_sizes": [4096, 512], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 128, "epochs": 400}
+Device: cuda | GPU_INDEX=1
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+================================================================================
+[2025-08-20 11:02:39] Starting model: noisy_D1_GRU_40_6_4096_512
+Config: {"hidden_sizes": [4096, 512], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 128, "epochs": 400}
+Device: cuda | GPU_INDEX=0
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-08-20 18:25:04] epoch=20 | avg_loss=2.978325 | elapsed_s=26619.63 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_20.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_20.pth'
+[2025-08-21 01:48:22] epoch=40 | avg_loss=2.721501 | elapsed_s=53217.28 | lr=6.689718e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_40.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_40.pth'
+[2025-08-21 09:13:21] epoch=60 | avg_loss=0.865248 | elapsed_s=79916.23 | lr=5.471566e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_60.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_60.pth'
+[2025-08-21 16:37:36] epoch=80 | avg_loss=0.772727 | elapsed_s=106571.42 | lr=4.475232e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_80.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_80.pth'
+[2025-08-22 00:02:27] epoch=100 | avg_loss=0.641608 | elapsed_s=133262.64 | lr=3.660323e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_100.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_100.pth'
+[2025-08-22 07:27:40] epoch=120 | avg_loss=0.565223 | elapsed_s=159974.89 | lr=2.993804e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_120.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_120.pth'
+[2025-08-22 14:51:53] epoch=140 | avg_loss=0.484328 | elapsed_s=186627.92 | lr=2.448653e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_140.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_140.pth'
+[2025-08-22 22:16:14] epoch=160 | avg_loss=0.431155 | elapsed_s=213288.99 | lr=2.002770e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_160.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_160.pth'
+[2025-08-23 05:41:10] epoch=180 | avg_loss=0.388793 | elapsed_s=239985.25 | lr=1.638080e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_180.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_180.pth'
+[2025-08-23 13:05:37] epoch=200 | avg_loss=0.340617 | elapsed_s=266652.19 | lr=1.339797e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_200.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_512/epoch_200.pth'
