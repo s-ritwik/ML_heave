@@ -4,4 +4,5 @@ GRU_generalised/brute_results/
 /ML_heave/seq/noisyGRU_models_seq/*
 seq/noisyGRU_models_seq/*
 seq/prediction_videos/*
+seq/noisyprediction_videos/*
 
