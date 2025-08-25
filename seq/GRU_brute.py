@@ -279,7 +279,8 @@ def main():
             print("Training for:",model_name)
             model_folder = os.path.join(MODEL_ROOT_DIR, model_name)
             os.makedirs(model_folder, exist_ok=True)
-
+            
+            n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
             model_log_path = os.path.join(LOG_DIR, f"{model_name}.log")
             with open(model_log_path, 'a') as mlog:
                 # Header for this model
@@ -287,6 +288,8 @@ def main():
                 mlog.write(f"[{now_str()}] Starting model: {model_name}\n")
                 mlog.write(f"Config: {json.dumps(config)}\n")
                 mlog.write(f"Device: {device} | GPU_INDEX={GPU_INDEX}\n")
+                mlog.write(f"Trainable parameters: {n_params:,}\n")
+
                 mlog.write(f"noise_std={noise_std}, meters_to_cm={meters_to_cm}\n")
                 mlog.write(f"Checkpoints every {SAVE_EVERY} epochs | Logs every {LOG_EVERY} epochs\n")
                 mlog.write('='*80 + '\n')
