@@ -14,3 +14,11 @@ Average Absolute Error (4s): 3.3240 cm
 Average Absolute Error (5s): 3.6022 cm
 
 ------------------------------------------------------------
+Model: noisy_D1_GRU_40_6_2048_1024
+Average Prediction Time: 0.0007 s
+Average Absolute Error (Total): nan cm
+Average Absolute Error (3s): nan cm
+Average Absolute Error (4s): nan cm
+Average Absolute Error (5s): nan cm
+
+------------------------------------------------------------
