@@ -1,4 +1,0 @@
-*.pth filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
-seq/noisyGRU_models_seq/* filter=lfs diff=lfs merge=lfs -text
-seq/prediction_videos/* filter=lfs diff=lfs merge=lfs -text
