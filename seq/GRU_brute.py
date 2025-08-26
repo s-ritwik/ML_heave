@@ -280,6 +280,15 @@ def main():
             model_folder = os.path.join(MODEL_ROOT_DIR, model_name)
             os.makedirs(model_folder, exist_ok=True)
             
+            
+
+            # Initialize model/optimizer/etc.
+            model = GRUModel(input_size=1, hidden_sizes=hidden_sizes, output_size=output_size).to(device)
+            criterion = nn.MSELoss()
+            optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+            scheduler = get_scheduler(optimizer, config)
+
+            # Count parameters
             n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
             model_log_path = os.path.join(LOG_DIR, f"{model_name}.log")
             with open(model_log_path, 'a') as mlog:
@@ -294,13 +303,6 @@ def main():
                 mlog.write(f"Checkpoints every {SAVE_EVERY} epochs | Logs every {LOG_EVERY} epochs\n")
                 mlog.write('='*80 + '\n')
                 mlog.flush()
-
-            # Initialize model/optimizer/etc.
-            model = GRUModel(input_size=1, hidden_sizes=hidden_sizes, output_size=output_size).to(device)
-            criterion = nn.MSELoss()
-            optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-            scheduler = get_scheduler(optimizer, config)
-
             # --------------------- Prepare training data ----------------------
             csv_files   = os.listdir(TRAIN_DIR)
             train_files = [file for file in csv_files if 'D1H' in file and 'D1H3' not in file]

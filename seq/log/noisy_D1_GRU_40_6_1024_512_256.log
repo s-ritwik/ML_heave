@@ -1,0 +1,29 @@
+================================================================================
+[2025-08-25 18:50:20] Starting model: noisy_D1_GRU_40_6_1024_512_256
+Config: {"hidden_sizes": [1024, 512, 256], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 256, "epochs": 400}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 6,139,512
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+================================================================================
+[2025-08-25 18:51:56] Starting model: noisy_D1_GRU_40_6_1024_512_256
+Config: {"hidden_sizes": [1024, 512, 256], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 1024, "epochs": 400}
+Device: cuda | GPU_INDEX=1
+Trainable parameters: 6,139,512
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-08-25 20:40:31] epoch=20 | avg_loss=0.052111 | elapsed_s=6609.91 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_20.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_20.pth'
+[2025-08-25 22:19:07] epoch=40 | avg_loss=0.013503 | elapsed_s=12526.36 | lr=6.689718e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_40.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_40.pth'
+[2025-08-25 23:22:33] epoch=60 | avg_loss=0.007710 | elapsed_s=16332.38 | lr=5.471566e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_60.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_60.pth'
+[2025-08-26 01:15:33] epoch=80 | avg_loss=0.005069 | elapsed_s=23112.15 | lr=4.475232e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_80.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_80.pth'
+[2025-08-26 03:08:37] epoch=100 | avg_loss=0.003864 | elapsed_s=29896.08 | lr=3.660323e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_100.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_100.pth'
+[2025-08-26 04:26:08] epoch=120 | avg_loss=0.003046 | elapsed_s=34547.07 | lr=2.993804e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_120.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_120.pth'
+[2025-08-26 05:21:55] epoch=140 | avg_loss=0.002384 | elapsed_s=37894.37 | lr=2.448653e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_140.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_140.pth'
+[2025-08-26 06:17:35] epoch=160 | avg_loss=0.001995 | elapsed_s=41233.94 | lr=2.002770e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_160.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_160.pth'
+[2025-08-26 07:13:14] epoch=180 | avg_loss=0.001678 | elapsed_s=44573.67 | lr=1.638080e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_180.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_180.pth'
+[2025-08-26 08:08:52] epoch=200 | avg_loss=0.001441 | elapsed_s=47911.65 | lr=1.339797e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_200.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_200.pth'
+[2025-08-26 09:04:28] epoch=220 | avg_loss=0.001266 | elapsed_s=51247.17 | lr=1.095829e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_220.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_220.pth'
+[2025-08-26 10:00:04] epoch=240 | avg_loss=0.001121 | elapsed_s=54583.50 | lr=8.962862e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_240.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_240.pth'
+[2025-08-26 11:36:04] epoch=260 | avg_loss=0.001009 | elapsed_s=60343.45 | lr=7.330787e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_260.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_260.pth'

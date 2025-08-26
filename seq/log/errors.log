@@ -34,3 +34,33 @@ Traceback (most recent call last):
     total_loss += float(loss.item())
 KeyboardInterrupt
 ================================================================================
+
+================================================================================
+Timestamp: 2025-08-25 18:42:48.406486
+Traceback (most recent call last):
+  File "/home/cp/ritwik/ML_heave/seq/GRU_brute.py", line 532, in <module>
+    main()
+  File "/home/cp/ritwik/ML_heave/seq/GRU_brute.py", line 375, in main
+    total_loss += float(loss.item())
+KeyboardInterrupt
+================================================================================
+
+================================================================================
+Timestamp: 2025-08-25 18:48:09.512512
+Traceback (most recent call last):
+  File "/home/cp/ritwik/ML_heave/seq/GRU_brute.py", line 532, in <module>
+    main()
+  File "/home/cp/ritwik/ML_heave/seq/GRU_brute.py", line 375, in main
+    total_loss += float(loss.item())
+KeyboardInterrupt
+================================================================================
+
+================================================================================
+Timestamp: 2025-08-25 18:51:30.329221
+Traceback (most recent call last):
+  File "/home/cp/ritwik/ML_heave/seq/GRU_brute.py", line 532, in <module>
+    main()
+  File "/home/cp/ritwik/ML_heave/seq/GRU_brute.py", line 251, in main
+    with open(CONFIG_FILE_PATH, 'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'model_configs_seq3.txt'
+================================================================================
