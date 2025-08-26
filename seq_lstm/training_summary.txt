@@ -1,0 +1,16 @@
+Model: D1_new_GRU_40_6_2048_2048.pth
+Average Prediction Time: 0.0892 s
+Average Absolute Error (Total): 2.8887 cm
+Average Absolute Error (3s): 1.7054 cm
+Average Absolute Error (4s): 2.0376 cm
+Average Absolute Error (5s): 2.3776 cm
+
+------------------------------------------------------------
+Model: D1_new_GRU_40_6_1024_1024.pth
+Average Prediction Time: 0.0268 s
+Average Absolute Error (Total): 4.0077 cm
+Average Absolute Error (3s): 2.7209 cm
+Average Absolute Error (4s): 3.0188 cm
+Average Absolute Error (5s): 3.4837 cm
+
+------------------------------------------------------------
