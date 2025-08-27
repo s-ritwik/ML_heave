@@ -1,0 +1,10 @@
+
+================================================================================
+Timestamp: 2025-08-27 16:45:26.486174
+Traceback (most recent call last):
+  File "seq_lstm/LSTM_brute.py", line 548, in <module>
+    main()
+  File "seq_lstm/LSTM_brute.py", line 266, in main
+    with open(CONFIG_FILE_PATH, 'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'model_configs_seq2.txt'
+================================================================================
