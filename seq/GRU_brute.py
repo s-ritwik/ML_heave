@@ -369,7 +369,16 @@ def main():
                     continuity_loss = torch.mean((outputs[:, 1:] - outputs[:, :-1]) ** 2)
 
                     loss = loss_first_x + loss_remaining + 0.2 * continuity_loss
+                    if not torch.isfinite(loss):
+                        with open(model_log_path, 'a') as mlog:
+                            mlog.write(f"[{now_str()}] Non-finite loss detected; skipping batch. "
+                                    f"loss_first={float(loss_first_x)} "
+                                    f"loss_rem={float(loss_remaining) if isinstance(loss_remaining, torch.Tensor) else loss_remaining} "
+                                    f"cont={float(continuity_loss)}\n")
+                        optimizer.zero_grad(set_to_none=True)
+                        continue
                     loss.backward()
+                    # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                     optimizer.step()
 
                     total_loss += float(loss.item())
