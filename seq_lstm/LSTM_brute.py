@@ -291,7 +291,7 @@ def main():
 
             # Build model name and per-model paths
             model_name   = f"noisy_D1_LSTM_{sequence_length//20}_{output_size//20}_{'_'.join(map(str, hidden_sizes))}"
-            print("Training for:", model_name)
+            print("Training for:", model_name, file=sys.__stdout__)
             model_folder = os.path.join(MODEL_ROOT_DIR, model_name)
             os.makedirs(model_folder, exist_ok=True)
 
