@@ -27,3 +27,21 @@ Checkpoints every 20 epochs | Logs every 20 epochs
 [2025-08-26 09:04:28] epoch=220 | avg_loss=0.001266 | elapsed_s=51247.17 | lr=1.095829e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_220.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_220.pth'
 [2025-08-26 10:00:04] epoch=240 | avg_loss=0.001121 | elapsed_s=54583.50 | lr=8.962862e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_240.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_240.pth'
 [2025-08-26 11:36:04] epoch=260 | avg_loss=0.001009 | elapsed_s=60343.45 | lr=7.330787e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_260.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_260.pth'
+[2025-08-26 13:34:45] epoch=280 | avg_loss=0.000918 | elapsed_s=67463.93 | lr=5.995901e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_280.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_280.pth'
+[2025-08-26 15:30:47] epoch=300 | avg_loss=0.000844 | elapsed_s=74426.74 | lr=4.904089e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_300.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_300.pth'
+[2025-08-26 17:25:07] epoch=320 | avg_loss=0.000865 | elapsed_s=81286.33 | lr=4.011089e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_320.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_320.pth'
+[2025-08-26 19:19:26] epoch=340 | avg_loss=0.000803 | elapsed_s=88144.88 | lr=3.280697e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_340.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_340.pth'
+[2025-08-26 21:13:44] epoch=360 | avg_loss=0.000756 | elapsed_s=95003.13 | lr=2.683305e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_360.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_360.pth'
+[2025-08-26 23:08:09] epoch=380 | avg_loss=0.000714 | elapsed_s=101867.97 | lr=2.194694e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_380.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_380.pth'
+[2025-08-27 01:02:40] epoch=400 | avg_loss=0.000684 | elapsed_s=108738.92 | lr=1.795055e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_400.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_400.pth'
+--------------------------------------------------------------------------------
+[2025-08-27 02:02:47] Training finished in 108738.99 s
+Final checkpoint used: noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_512_256/epoch_400.pt
+Test video saved: noisyprediction_videos/noisy_D1_GRU_40_6_1024_512_256.mp4
+Average Prediction Time: 0.000663 s
+Average Absolute Error (Total): 4.734415 cm
+Average Absolute Error (3s): 4.176365 cm
+Average Absolute Error (4s): 4.354357 cm
+Average Absolute Error (5s): 4.554065 cm
+--------------------------------------------------------------------------------
+

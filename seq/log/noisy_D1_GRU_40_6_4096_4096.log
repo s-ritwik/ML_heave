@@ -6,3 +6,4 @@ Trainable parameters: 151,548,024
 noise_std=0.05, meters_to_cm=25
 Checkpoints every 20 epochs | Logs every 20 epochs
 ================================================================================
+[2025-08-27 01:28:15] epoch=20 | avg_loss=28.575698 | elapsed_s=110121.37 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_20.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_20.pth'
