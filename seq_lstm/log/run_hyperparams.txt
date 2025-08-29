@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-08-27 16:53:02",
+  "gpu_index": 0,
+  "torch_device": "cuda",
+  "noise_std_default": 0.05,
+  "meters_to_cm": 25,
+  "save_every_epochs": 20,
+  "log_every_epochs": 20,
+  "video_fps": 20,
+  "video_dpi": 100,
+  "model_root_dir": "noisyLSTM_models_seq",
+  "plot_dir": "noisyprediction_videos",
+  "config_file_path": "model_configs_local.txt",
+  "train_dir": "train_data_normalised",
+  "train_mocap_dir": "train_data_normalised_mocap",
+  "test_file_path": "train_data_normalised_mocap/D1H3_normalised.csv"
+}
+{
+  "timestamp": "2025-08-29 10:57:22",
+  "gpu_index": 0,
+  "torch_device": "cuda",
+  "noise_std_default": 0.05,
+  "meters_to_cm": 25,
+  "save_every_epochs": 20,
+  "log_every_epochs": 20,
+  "video_fps": 20,
+  "video_dpi": 100,
+  "model_root_dir": "noisyLSTM_models_seq",
+  "plot_dir": "noisyprediction_videos",
+  "config_file_path": "model_configs_seq2.txt",
+  "train_dir": "train_data_normalised",
+  "train_mocap_dir": "train_data_normalised_mocap",
+  "test_file_path": "train_data_normalised_mocap/D1H3_normalised.csv"
+}
+{
+  "timestamp": "2025-08-29 10:59:32",
+  "gpu_index": 0,
+  "torch_device": "cuda",
+  "noise_std_default": 0.05,
+  "meters_to_cm": 25,
+  "save_every_epochs": 20,
+  "log_every_epochs": 20,
+  "video_fps": 20,
+  "video_dpi": 100,
+  "model_root_dir": "noisyLSTM_models_seq",
+  "plot_dir": "noisyprediction_videos",
+  "config_file_path": "model_configs_local.txt",
+  "train_dir": "train_data_normalised",
+  "train_mocap_dir": "train_data_normalised_mocap",
+  "test_file_path": "train_data_normalised_mocap/D1H3_normalised.csv"
+}

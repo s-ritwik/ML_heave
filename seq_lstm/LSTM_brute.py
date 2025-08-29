@@ -10,6 +10,11 @@ Key features:
 - Weighted loss for early-horizon steps + continuity regularizer
 - Streaming one-tick inference using LSTM hidden states (h, c)
 - Test-time video with predicted vs. ground-truth traces
+
+NEW:
+- Resume flag: if RESUME=True, for each config we auto-detect the newest checkpoint
+  (.pt preferred, else .pth) in that config’s folder and resume from it.
+  If RESUME_PATH is set, it takes priority.
 """
 
 import os
@@ -17,9 +22,9 @@ import re
 import sys
 import json
 import time
-import math
 import glob
 import torch
+import argparse
 import numpy as np
 import pandas as pd
 import torch.nn as nn
@@ -55,11 +60,11 @@ os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Global data/config files
-CONFIG_FILE_PATH = 'model_configs_local.txt'
+CONFIG_FILE_PATH   = 'model_configs_local.txt'
 MODEL_SUMMARY_PATH = 'model_summary.txt'
 
-# Training data locations (kept consistent with earlier repos)
-TRAIN_DIR = 'train_data_normalised'
+# Training data locations
+TRAIN_DIR      = 'train_data_normalised'
 TRAIN_MOCAP_DIR = 'train_data_normalised_mocap'  # used for test file below
 
 # Testing
@@ -77,9 +82,24 @@ LOG_EVERY  = 20                 # epochs (same as SAVE_EVERY)
 VIDEO_FPS = 20
 VIDEO_DPI = 100
 
-# Optional: resume from a specific checkpoint path (leave "" for fresh)
-RESUME_PATH = ""   # e.g. "noisyLSTM_models_seq/noisy_D1_LSTM_40_8_512_256/epoch_100.pt"
+# --------------------- RESUME CONTROLS ---------------------
+RESUME = False
+RESUME_PATH = ""
 
+def _build_argparser():
+    parser = argparse.ArgumentParser(description="Noisy LSTM training & evaluation")
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume per-config from the latest checkpoint in its model folder."
+    )
+    parser.add_argument(
+        "--resume-path",
+        type=str,
+        default="",
+        help="Explicit checkpoint file (.pt or .pth) to resume from; overrides auto-detection."
+    )
+    return parser
 # -------------------------------------------------------------------------
 # -------------------------- UTILITY FUNCTIONS ----------------------------
 # -------------------------------------------------------------------------
@@ -162,17 +182,39 @@ def get_scheduler(optimizer, config):
     else:
         raise ValueError(f"Unknown lr_scheduler: {sched_type}")
 
-def latest_checkpoint(model_folder):
-    """Return the path to the latest epoch_*.pt checkpoint if present; else ''."""
-    pts = glob.glob(os.path.join(model_folder, "epoch_*.pt"))
-    if not pts:
-        return ""
-    # Extract epoch numbers
-    def _epoch_num(p):
-        m = re.search(r'epoch_(\d+)\.pt$', os.path.basename(p))
-        return int(m.group(1)) if m else -1
-    pts = sorted(pts, key=_epoch_num)
-    return pts[-1]
+# --------------------------- Resume helpers ---------------------------
+
+def _extract_epoch(path):
+    """Extract epoch number from filenames like 'epoch_123.pt' or 'epoch_123.pth'."""
+    m = re.search(r'epoch_(\d+)\.(pt|pth)$', os.path.basename(path))
+    return int(m.group(1)) if m else None
+
+def find_latest_checkpoint_any(model_folder):
+    """
+    Find the newest checkpoint in `model_folder` among *.pt and *.pth.
+    Return a tuple: (path, kind, epoch) where kind in {'pt','pth'}; or (None, None, None) if none found.
+    Preference is simply by highest epoch; if tie, prefer .pt.
+    """
+    pts  = glob.glob(os.path.join(model_folder, "epoch_*.pt"))
+    pths = glob.glob(os.path.join(model_folder, "epoch_*.pth"))
+
+    candidates = []
+    for p in pts:
+        ep = _extract_epoch(p)
+        if ep is not None:
+            candidates.append((ep, 'pt', p))
+    for p in pths:
+        ep = _extract_epoch(p)
+        if ep is not None:
+            candidates.append((ep, 'pth', p))
+
+    if not candidates:
+        return None, None, None
+
+    # sort by epoch asc, then prefer pt over pth at same epoch
+    candidates.sort(key=lambda t: (t[0], 0 if t[1] == 'pt' else 1))
+    ep, kind, path = candidates[-1]
+    return path, kind, ep
 
 # -------------------------------------------------------------------------
 # ---------------------------- MODEL DEFINITION ---------------------------
@@ -291,7 +333,7 @@ def main():
 
             # Build model name and per-model paths
             model_name   = f"noisy_D1_LSTM_{sequence_length//20}_{output_size//20}_{'_'.join(map(str, hidden_sizes))}"
-            print("Training for:", model_name, file=sys.__stdout__)
+            print("Training for:", model_name, file=sys.__stdout__)  # also print to original stdout
             model_folder = os.path.join(MODEL_ROOT_DIR, model_name)
             os.makedirs(model_folder, exist_ok=True)
 
@@ -301,7 +343,7 @@ def main():
             optimizer = optim.Adam(model.parameters(), lr=learning_rate)
             scheduler = get_scheduler(optimizer, config)
 
-            # Count parameters
+            # Count parameters + setup per-model log
             n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
             model_log_path = os.path.join(LOG_DIR, f"{model_name}.log")
             with open(model_log_path, 'a') as mlog:
@@ -345,24 +387,56 @@ def main():
                 pin_memory=torch.cuda.is_available()
             )
 
+            # ------------------- RESUME (per-config) -------------------
+            start_epoch = 1
+            final_resume_path = None
+            final_resume_kind = None
+            final_resume_epoch = None
+
+            if RESUME:
+                if RESUME_PATH and os.path.isfile(RESUME_PATH):
+                    # Explicit resume path has priority
+                    final_resume_path = RESUME_PATH
+                    final_resume_kind = 'pt' if RESUME_PATH.endswith('.pt') else 'pth' if RESUME_PATH.endswith('.pth') else None
+                    final_resume_epoch = _extract_epoch(RESUME_PATH)
+                else:
+                    # Auto-detect newest ckpt in this config's folder
+                    rp, rk, re = find_latest_checkpoint_any(model_folder)
+                    final_resume_path, final_resume_kind, final_resume_epoch = rp, rk, re
+
+                if final_resume_path and final_resume_kind:
+                    if final_resume_kind == 'pt':
+                        ckpt = torch.load(final_resume_path, map_location=device)
+                        model.load_state_dict(ckpt["model_state_dict"])
+                        optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+                        if scheduler and ckpt.get("scheduler_state_dict"):
+                            scheduler.load_state_dict(ckpt["scheduler_state_dict"])
+                        # prefer stored epoch; fallback to parsed epoch
+                        stored_epoch = int(ckpt.get("epoch", final_resume_epoch or 0))
+                        start_epoch = stored_epoch + 1
+                    elif final_resume_kind == 'pth':
+                        state_dict = torch.load(final_resume_path, map_location=device)
+                        model.load_state_dict(state_dict)
+                        # only weights available; parse epoch from filename if possible
+                        start_epoch = (final_resume_epoch + 1) if final_resume_epoch is not None else 1
+
+                    with open(model_log_path, 'a') as mlog:
+                        mlog.write(f"[{now_str()}] RESUME=True | Resuming from '{final_resume_path}' "
+                                   f"(kind={final_resume_kind}, parsed_epoch={final_resume_epoch}) "
+                                   f"→ start_epoch={start_epoch}\n")
+                        mlog.flush()
+                else:
+                    with open(model_log_path, 'a') as mlog:
+                        mlog.write(f"[{now_str()}] RESUME=True | No checkpoint found for '{model_name}'. Starting fresh.\n")
+                        mlog.flush()
+            else:
+                with open(model_log_path, 'a') as mlog:
+                    mlog.write(f"[{now_str()}] RESUME=False | Starting fresh from epoch 1.\n")
+                    mlog.flush()
+
             # -------------------------- Training loop -------------------------
             start_time = time.time()
             x_time_steps = min(x_seconds * 20, output_size)  # clamp to horizon
-
-            # Resume logic
-            start_epoch = 1
-            # priority: explicit RESUME_PATH else latest in model_folder
-            resume_path = RESUME_PATH if RESUME_PATH else latest_checkpoint(model_folder)
-            if resume_path and os.path.isfile(resume_path):
-                ckpt = torch.load(resume_path, map_location=device)
-                model.load_state_dict(ckpt["model_state_dict"])
-                optimizer.load_state_dict(ckpt["optimizer_state_dict"])
-                if scheduler and ckpt.get("scheduler_state_dict"):
-                    scheduler.load_state_dict(ckpt["scheduler_state_dict"])
-                start_epoch = int(ckpt.get("epoch", 0)) + 1
-                with open(model_log_path, 'a') as mlog:
-                    mlog.write(f"[{now_str()}] Resumed from '{resume_path}' at epoch {start_epoch}\n")
-                    mlog.flush()
 
             for epoch in range(start_epoch, epochs + 1):
                 model.train()
@@ -380,8 +454,8 @@ def main():
                     first_x_steps   = targets[:, :x_time_steps]
                     remaining_steps = targets[:, x_time_steps:]
 
-                    loss_first_x    = criterion(outputs[:, :x_time_steps], first_x_steps) * w
-                    loss_remaining  = criterion(outputs[:, x_time_steps:], remaining_steps) if remaining_steps.size(1) > 0 else torch.tensor(0.0, device=device)
+                    loss_first_x    = nn.functional.mse_loss(outputs[:, :x_time_steps], first_x_steps) * w
+                    loss_remaining  = nn.functional.mse_loss(outputs[:, x_time_steps:], remaining_steps) if remaining_steps.size(1) > 0 else torch.tensor(0.0, device=device)
 
                     # Smoothness/continuity loss on output sequence
                     continuity_loss = torch.mean((outputs[:, 1:] - outputs[:, :-1]) ** 2)
@@ -426,12 +500,15 @@ def main():
             training_time = time.time() - start_time
 
             # ---------------------------- Testing -----------------------------
-            # Load latest checkpoint (prefer full .pt)
-            final_ckpt_pt = latest_checkpoint(model_folder)
-            if final_ckpt_pt:
-                ckpt = torch.load(final_ckpt_pt, map_location=device)
+            # Prefer the newest .pt/.pth in this model folder
+            final_ckpt_path, final_kind, _ = find_latest_checkpoint_any(model_folder)
+            if final_ckpt_path and final_kind == 'pt':
+                ckpt = torch.load(final_ckpt_path, map_location=device)
                 model.load_state_dict(ckpt["model_state_dict"])
-                final_ckpt_display = final_ckpt_pt
+                final_ckpt_display = final_ckpt_path
+            elif final_ckpt_path and final_kind == 'pth':
+                model.load_state_dict(torch.load(final_ckpt_path, map_location=device))
+                final_ckpt_display = final_ckpt_path
             else:
                 # fall back to weights of final epoch
                 final_ckpt_pth = os.path.join(model_folder, f"epoch_{epochs}.pth")
@@ -452,7 +529,7 @@ def main():
             start_index = sequence_length
             end_index   = start_index + max(0, total_steps)
             if end_index + output_size > len(test_data):
-                end_index   = len(test_data) - output_size
+                end_index = len(test_data) - output_size
 
             h = model.init_hidden(1)  # batch size 1 for inference
 
@@ -545,4 +622,8 @@ def main():
 
 # Entry point
 if __name__ == '__main__':
+    args = _build_argparser().parse_args()
+    # override globals before main() uses them
+    RESUME = bool(args.resume)
+    RESUME_PATH = args.resume_path or RESUME_PATH
     main()
