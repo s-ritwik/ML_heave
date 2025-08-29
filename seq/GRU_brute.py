@@ -13,7 +13,10 @@ Changes vs. original:
 - Records GPU selection, noise std, video settings, and constants in logs
 - Implements prediction timing during test and includes it in summary
 - Adds robust error logging and configurable LR schedule (exponential/step/cosine)
-- Supports resume from full checkpoint (.pt)
+
+NEW:
+- CLI resume: pass --resume to auto-resume per config from newest checkpoint in its folder
+  (prefers .pt; falls back to .pth). Optionally use --resume-path to specify an exact file.
 """
 
 import os
@@ -23,6 +26,7 @@ import json
 import time
 import math
 import glob
+import argparse
 import torch
 import numpy as np
 import pandas as pd
@@ -81,7 +85,8 @@ LOG_EVERY  = 20                 # epochs (same as SAVE_EVERY per request)
 VIDEO_FPS = 20
 VIDEO_DPI = 100
 
-# Optional: resume from a specific checkpoint path (leave "" for fresh)
+# --------------------- RESUME CONTROLS (overridden by CLI) ---------------------
+RESUME = False
 RESUME_PATH = ""   # e.g. "noisyGRU_models_seq/noisy_D1_GRU_20_8_512_256/epoch_100.pt"
 
 # -------------------------------------------------------------------------
@@ -165,17 +170,45 @@ def get_scheduler(optimizer, config):
     else:
         raise ValueError(f"Unknown lr_scheduler: {sched_type}")
 
-def latest_checkpoint(model_folder):
-    """Return the path to the latest epoch_*.pt checkpoint if present; else ''."""
+def latest_checkpoint_pt(model_folder):
+    """Return the path to the latest epoch_*.pt checkpoint if present; else '' (legacy helper)."""
     pts = glob.glob(os.path.join(model_folder, "epoch_*.pt"))
     if not pts:
         return ""
-    # Extract epoch numbers
     def _epoch_num(p):
         m = re.search(r'epoch_(\d+)\.pt$', os.path.basename(p))
         return int(m.group(1)) if m else -1
     pts = sorted(pts, key=_epoch_num)
     return pts[-1]
+
+# --------- resume helpers (supports .pt and .pth; prefers higher epoch, then .pt) ---------
+
+def _extract_epoch(path):
+    m = re.search(r'epoch_(\d+)\.(pt|pth)$', os.path.basename(path))
+    return int(m.group(1)) if m else None
+
+def find_latest_checkpoint_any(model_folder):
+    """
+    Find newest checkpoint among *.pt and *.pth.
+    Returns (path, kind, epoch) where kind in {'pt','pth'}; or (None, None, None).
+    Preference: higher epoch; if tie, prefer .pt over .pth.
+    """
+    pts  = glob.glob(os.path.join(model_folder, "epoch_*.pt"))
+    pths = glob.glob(os.path.join(model_folder, "epoch_*.pth"))
+    candidates = []
+    for p in pts:
+        ep = _extract_epoch(p)
+        if ep is not None:
+            candidates.append((ep, 'pt', p))
+    for p in pths:
+        ep = _extract_epoch(p)
+        if ep is not None:
+            candidates.append((ep, 'pth', p))
+    if not candidates:
+        return None, None, None
+    candidates.sort(key=lambda t: (t[0], 0 if t[1] == 'pt' else 1))  # epoch asc, pt before pth
+    ep, kind, path = candidates[-1]
+    return path, kind, ep
 
 # -------------------------------------------------------------------------
 # ---------------------------- MODEL DEFINITION ---------------------------
@@ -235,7 +268,8 @@ def log_exception(exc_type, exc_value, exc_traceback):
         traceback.print_exception(exc_type, exc_value, exc_traceback, file=f)
         f.write("="*80 + "\n")
     # Also write to the run log
-    traceback.print_exception(exc_type, exc_value, exc_traceback, file=open(run_log_file, "a"))
+    with open(run_log_file, "a") as rlog:
+        traceback.print_exception(exc_type, exc_value, exc_traceback, file=rlog)
 
 sys.excepthook = log_exception
 
@@ -276,11 +310,9 @@ def main():
 
             # Build model name and per-model paths
             model_name   = f"noisy_D1_GRU_{sequence_length//20}_{output_size//20}_{'_'.join(map(str, hidden_sizes))}"
-            print("Training for:",model_name, file=sys.__stdout__)
+            print("Training for:", model_name, file=sys.__stdout__)
             model_folder = os.path.join(MODEL_ROOT_DIR, model_name)
             os.makedirs(model_folder, exist_ok=True)
-            
-            
 
             # Initialize model/optimizer/etc.
             model = GRUModel(input_size=1, hidden_sizes=hidden_sizes, output_size=output_size).to(device)
@@ -298,11 +330,11 @@ def main():
                 mlog.write(f"Config: {json.dumps(config)}\n")
                 mlog.write(f"Device: {device} | GPU_INDEX={GPU_INDEX}\n")
                 mlog.write(f"Trainable parameters: {n_params:,}\n")
-
                 mlog.write(f"noise_std={noise_std}, meters_to_cm={meters_to_cm}\n")
                 mlog.write(f"Checkpoints every {SAVE_EVERY} epochs | Logs every {LOG_EVERY} epochs\n")
                 mlog.write('='*80 + '\n')
                 mlog.flush()
+
             # --------------------- Prepare training data ----------------------
             csv_files   = os.listdir(TRAIN_DIR)
             train_files = [file for file in csv_files if 'D1H' in file and 'D1H3' not in file]
@@ -310,6 +342,8 @@ def main():
 
             # Build sequences (fast, without Python loop)
             total = sequence_length + output_size
+            if len(train_data) < total:
+                raise ValueError(f"Training data too short ({len(train_data)}) for total window size {total}.")
             windows = np.lib.stride_tricks.sliding_window_view(train_data, total)  # [N, total]
             X_np = windows[:, :sequence_length][..., None].copy()  # [N, seq_len, 1]
             y_np = windows[:, sequence_length:].copy()              # [N, out_size]
@@ -325,26 +359,52 @@ def main():
             train_dataset = TensorDataset(X_train_noisy, y_train)
             train_loader  = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
 
+            # ------------------- RESUME (per-config) -------------------
+            start_epoch = 1
+            final_resume_path = None
+            final_resume_kind = None
+            final_resume_epoch = None
+
+            if RESUME:
+                if RESUME_PATH and os.path.isfile(RESUME_PATH):
+                    final_resume_path = RESUME_PATH
+                    final_resume_kind = 'pt' if RESUME_PATH.endswith('.pt') else 'pth' if RESUME_PATH.endswith('.pth') else None
+                    final_resume_epoch = _extract_epoch(RESUME_PATH)
+                else:
+                    rp, rk, re = find_latest_checkpoint_any(model_folder)
+                    final_resume_path, final_resume_kind, final_resume_epoch = rp, rk, re
+
+                if final_resume_path and final_resume_kind:
+                    if final_resume_kind == 'pt':
+                        ckpt = torch.load(final_resume_path, map_location=device)
+                        model.load_state_dict(ckpt["model_state_dict"])
+                        optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+                        if scheduler and ckpt.get("scheduler_state_dict"):
+                            scheduler.load_state_dict(ckpt["scheduler_state_dict"])
+                        stored_epoch = int(ckpt.get("epoch", final_resume_epoch or 0))
+                        start_epoch = stored_epoch + 1
+                    elif final_resume_kind == 'pth':
+                        state_dict = torch.load(final_resume_path, map_location=device)
+                        model.load_state_dict(state_dict)
+                        start_epoch = (final_resume_epoch + 1) if final_resume_epoch is not None else 1
+
+                    with open(model_log_path, 'a') as mlog:
+                        mlog.write(f"[{now_str()}] RESUME=True | Resuming from '{final_resume_path}' "
+                                   f"(kind={final_resume_kind}, parsed_epoch={final_resume_epoch}) "
+                                   f"→ start_epoch={start_epoch}\n")
+                        mlog.flush()
+                else:
+                    with open(model_log_path, 'a') as mlog:
+                        mlog.write(f"[{now_str()}] RESUME=True | No checkpoint found for '{model_name}'. Starting fresh.\n")
+                        mlog.flush()
+            else:
+                with open(model_log_path, 'a') as mlog:
+                    mlog.write(f"[{now_str()}] RESUME=False | Starting fresh from epoch 1.\n")
+                    mlog.flush()
+
             # -------------------------- Training loop -------------------------
             start_time = time.time()
             x_time_steps = x_seconds * 20  # Steps for weighted loss partition
-
-            # Resume logic
-            start_epoch = 1
-            resume_used = False
-            # priority: explicit RESUME_PATH else latest in model_folder
-            resume_path = RESUME_PATH if RESUME_PATH else latest_checkpoint(model_folder)
-            if resume_path and os.path.isfile(resume_path):
-                ckpt = torch.load(resume_path, map_location=device)
-                model.load_state_dict(ckpt["model_state_dict"])
-                optimizer.load_state_dict(ckpt["optimizer_state_dict"])
-                if scheduler and ckpt.get("scheduler_state_dict"):
-                    scheduler.load_state_dict(ckpt["scheduler_state_dict"])
-                start_epoch = int(ckpt.get("epoch", 0)) + 1
-                resume_used = True
-                with open(model_log_path, 'a') as mlog:
-                    mlog.write(f"[{now_str()}] Resumed from '{resume_path}' at epoch {start_epoch}\n")
-                    mlog.flush()
 
             for epoch in range(start_epoch, epochs + 1):
                 model.train()
@@ -372,9 +432,9 @@ def main():
                     if not torch.isfinite(loss):
                         with open(model_log_path, 'a') as mlog:
                             mlog.write(f"[{now_str()}] Non-finite loss detected; skipping batch. "
-                                    f"loss_first={float(loss_first_x)} "
-                                    f"loss_rem={float(loss_remaining) if isinstance(loss_remaining, torch.Tensor) else loss_remaining} "
-                                    f"cont={float(continuity_loss)}\n")
+                                       f"loss_first={float(loss_first_x)} "
+                                       f"loss_rem={float(loss_remaining) if isinstance(loss_remaining, torch.Tensor) else loss_remaining} "
+                                       f"cont={float(continuity_loss)}\n")
                         optimizer.zero_grad(set_to_none=True)
                         continue
                     loss.backward()
@@ -417,14 +477,17 @@ def main():
             training_time = time.time() - start_time
 
             # ---------------------------- Testing -----------------------------
-            # Load latest checkpoint (prefer full .pt)
-            final_ckpt_pt = latest_checkpoint(model_folder)
-            if final_ckpt_pt:
-                ckpt = torch.load(final_ckpt_pt, map_location=device)
+            # Prefer the newest .pt/.pth in this model folder
+            final_ckpt_path, final_kind, _ = find_latest_checkpoint_any(model_folder)
+            if final_ckpt_path and final_kind == 'pt':
+                ckpt = torch.load(final_ckpt_path, map_location=device)
                 model.load_state_dict(ckpt["model_state_dict"])
-                final_ckpt_display = final_ckpt_pt
+                final_ckpt_display = final_ckpt_path
+            elif final_ckpt_path and final_kind == 'pth':
+                model.load_state_dict(torch.load(final_ckpt_path, map_location=device))
+                final_ckpt_display = final_ckpt_path
             else:
-                # fall back to weights of final epoch
+                # fall back to weights of final epoch (expected to exist)
                 final_ckpt_pth = os.path.join(model_folder, f"epoch_{epochs}.pth")
                 model.load_state_dict(torch.load(final_ckpt_pth, map_location=device))
                 final_ckpt_display = final_ckpt_pth
@@ -444,7 +507,6 @@ def main():
             end_index   = start_index + total_steps
             if end_index + output_size > len(test_data):
                 end_index   = len(test_data) - output_size
-                total_steps = end_index - start_index
 
             h = model.init_hidden(1)  # batch size 1 for inference
 
@@ -470,11 +532,10 @@ def main():
                     predicted_future = predicted * meters_to_cm
                     abs_error        = np.abs(true_future - predicted_future)
 
-                    if i >= start_index + sequence_length:
-                        absolute_errors.append(abs_error.mean())
-                        errors_3s.append(np.mean(abs_error[:steps_3s]))
-                        errors_4s.append(np.mean(abs_error[:steps_4s]))
-                        errors_5s.append(np.mean(abs_error[:steps_5s]))
+                    absolute_errors.append(abs_error.mean())
+                    errors_3s.append(np.mean(abs_error[:steps_3s]))
+                    errors_4s.append(np.mean(abs_error[:steps_4s]))
+                    errors_5s.append(np.mean(abs_error[:steps_5s]))
 
                     # Plot
                     fig.clear()
@@ -536,6 +597,27 @@ def main():
 
     summary_file.close()
 
+# ----------------------------- CLI PARSER ---------------------------------
+
+def _build_argparser():
+    parser = argparse.ArgumentParser(description="Noisy GRU training & evaluation")
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume per-config from the latest checkpoint in its model folder."
+    )
+    parser.add_argument(
+        "--resume-path",
+        type=str,
+        default="",
+        help="Explicit checkpoint file (.pt or .pth) to resume from; overrides auto-detection."
+    )
+    return parser
+
 # Entry point
 if __name__ == '__main__':
+    args = _build_argparser().parse_args()
+    # override globals before main() uses them
+    RESUME = bool(args.resume)
+    RESUME_PATH = args.resume_path or RESUME_PATH
     main()
