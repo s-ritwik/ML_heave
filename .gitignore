@@ -6,3 +6,5 @@ seq/noisyGRU_models_seq/*
 seq/prediction_videos/*
 seq/noisyprediction_videos/*
 noisyprediction_videos/*
+*.pth
+*.pt
