@@ -7,3 +7,5 @@ noise_std=0.05, meters_to_cm=25
 Checkpoints every 20 epochs | Logs every 20 epochs
 ================================================================================
 [2025-08-27 01:28:15] epoch=20 | avg_loss=28.575698 | elapsed_s=110121.37 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_20.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_20.pth'
+[2025-08-28 05:54:33] epoch=40 | avg_loss=28.559099 | elapsed_s=212499.17 | lr=6.689718e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_40.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_40.pth'
+[2025-08-29 03:47:52] epoch=60 | avg_loss=28.540512 | elapsed_s=291298.50 | lr=5.471566e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_60.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_60.pth'

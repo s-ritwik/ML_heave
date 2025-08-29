@@ -26,3 +26,14 @@ Checkpoints every 20 epochs | Logs every 20 epochs
 [2025-08-27 14:47:08] epoch=360 | avg_loss=0.002917 | elapsed_s=45859.94 | lr=2.683305e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_256_128/epoch_360.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_256_128/epoch_360.pth'
 [2025-08-27 15:29:35] epoch=380 | avg_loss=0.002837 | elapsed_s=48407.29 | lr=2.194694e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_256_128/epoch_380.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_256_128/epoch_380.pth'
 [2025-08-27 16:12:01] epoch=400 | avg_loss=0.002772 | elapsed_s=50953.32 | lr=1.795055e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_256_128/epoch_400.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_256_128/epoch_400.pth'
+--------------------------------------------------------------------------------
+[2025-08-27 17:11:58] Training finished in 50953.34 s
+Final checkpoint used: noisyGRU_models_seq/noisy_D1_GRU_40_6_512_256_128/epoch_400.pt
+Test video saved: noisyprediction_videos/noisy_D1_GRU_40_6_512_256_128.mp4
+Average Prediction Time: 0.000661 s
+Average Absolute Error (Total): 4.540420 cm
+Average Absolute Error (3s): 3.664830 cm
+Average Absolute Error (4s): 3.960457 cm
+Average Absolute Error (5s): 4.278385 cm
+--------------------------------------------------------------------------------
+
