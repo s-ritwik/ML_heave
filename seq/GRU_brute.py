@@ -519,13 +519,21 @@ def main():
             video_out_path = os.path.join(PLOT_DIR, f"{model_name}.mp4")
             with torch.no_grad(), writer.saving(fig, video_out_path, dpi=VIDEO_DPI):
                 for i in range(start_index, end_index):
+                    noisy_series = np.full(len(test_data), np.nan, dtype=np.float32)
+
+                    # ---------- inside the testing loop, REPLACE your per-frame block with this ----------
                     # one point per step (streaming) + test-time noise
-                    val = torch.tensor([[[test_data[i]]]], dtype=torch.float32, device=device)
+                    val = torch.tensor([[[test_data[i]]]], dtype=torch.float32, device=device)  # [1,1,1]
                     input_tensor_noisy = val + torch.randn_like(val) * noise_std
 
+                    # record the actual noisy value we fed (convert to cm for plotting)
+                    noisy_val_cm = float(input_tensor_noisy.squeeze().detach().cpu().numpy()) * meters_to_cm
+                    noisy_series[i] = noisy_val_cm
+
                     t0 = time.perf_counter()
-                    output, h = model(input_tensor_noisy, h)
-                    h = [h_i.detach() for h_i in h]
+                    output, h = model(input_tensor_noisy, h)  # stateful inference: one datapoint per tick
+                    # detach hidden state (LSTM has detach_state; GRU uses list detach)
+                    h = model.detach_state(h) if hasattr(model, "detach_state") else [hh.detach() for hh in h]
                     t1 = time.perf_counter()
                     prediction_times.append(t1 - t0)
 
@@ -535,28 +543,60 @@ def main():
                     abs_error        = np.abs(true_future - predicted_future)
 
                     absolute_errors.append(abs_error.mean())
-                    errors_3s.append(np.mean(abs_error[:steps_3s]))
-                    errors_4s.append(np.mean(abs_error[:steps_4s]))
-                    errors_5s.append(np.mean(abs_error[:steps_5s]))
+                    if steps_3s > 0: errors_3s.append(float(np.mean(abs_error[:steps_3s])))
+                    if steps_4s > 0: errors_4s.append(float(np.mean(abs_error[:steps_4s])))
+                    if steps_5s > 0: errors_5s.append(float(np.mean(abs_error[:steps_5s])))
 
-                    # Plot
+                    # ---- Build history window (exactly `sequence_length` points if available) ----
+                    hist_start = max(0, i - sequence_length + 1)
+                    hist_x = np.arange(hist_start, i + 1) / 20.0
+                    hist_clean_cm = test_data[hist_start : i + 1] * meters_to_cm
+                    hist_noisy_cm = noisy_series[hist_start : i + 1]  # contains NaNs for early steps
+
+                    # ---- Future time axis ----
+                    fut_x = np.arange(i + 1, i + 1 + output_size) / 20.0
+
+                    # ---- Draw frame: show history (clean + noisy) and future (true + predicted) ----
                     fig.clear()
                     ax1 = fig.add_subplot(2, 1, 1)
-                    xs = np.arange(i + 1, i + 1 + output_size) / 20.0
-                    ax1.plot(xs, true_future, 'g--', label='True Future Data (cm)')
-                    ax1.plot(xs, predicted_future, 'r',   label='Predicted Data (cm)')
-                    ax1.set_ylim(-30, 30)
-                    ax1.set_title(f"Time Elapsed: {(i - start_index) / 20:.2f} s")
-                    ax1.set_xlabel('Time (seconds)')
-                    ax1.set_ylabel('Prediction (cm)')
-                    ax1.legend()
 
+                    # history (clean) — what the underlying signal actually was
+                    ax1.plot(hist_x, hist_clean_cm, 'k', linewidth=1.2, label=f'History clean ({len(hist_clean_cm)} steps)')
+
+                    # history (noisy) — EXACT values fed to the model at each tick
+                    # we mask NaNs so the line starts when data is first available
+                    mask = ~np.isnan(hist_noisy_cm)
+                    if np.any(mask):
+                        ax1.plot(hist_x[mask], hist_noisy_cm[mask], '--', linewidth=1.0, label='History noisy (fed)', alpha=0.9)
+
+                    # future (true vs predicted)
+                    ax1.plot(fut_x, true_future, 'g--', linewidth=1.2, label=f'True (+{output_size/20:.1f}s)')
+                    ax1.plot(fut_x, predicted_future, 'r', linewidth=1.2, label='Predicted')
+
+                    # lock x-range to show exactly history+future
+                    xmin = (i - sequence_length + 1) / 20.0
+                    xmax = (i + output_size) / 20.0
+                    ax1.set_xlim(xmin, xmax)
+                    ax1.set_ylim(-30, 30)
+                    ax1.set_title(f"t = {i/20.0:.2f}s | Window: {sequence_length} hist + {output_size} fut")
+                    ax1.set_xlabel('Time (s)')
+                    ax1.set_ylabel('Position (cm)')
+                    ax1.legend(loc='upper left')
+
+                    # annotate per-tick prediction time
+                    if prediction_times:
+                        ax1.text(0.01, 0.95,
+                                f"pred time: {prediction_times[-1]*1000:.2f} ms",
+                                transform=ax1.transAxes, va='top', ha='left')
+
+                    # error subplot
                     ax2 = fig.add_subplot(2, 1, 2)
-                    ax2.plot(xs, abs_error, 'b', label='Absolute Error (cm)')
+                    ax2.plot(fut_x, abs_error, 'b', linewidth=1.2, label='Absolute Error (cm)')
+                    ax2.set_xlim(xmin, xmax)
                     ax2.set_ylim(0, 15)
-                    ax2.set_xlabel('Time (seconds)')
+                    ax2.set_xlabel('Time (s)')
                     ax2.set_ylabel('Error (cm)')
-                    ax2.legend()
+                    ax2.legend(loc='upper left')
 
                     writer.grab_frame()
 
