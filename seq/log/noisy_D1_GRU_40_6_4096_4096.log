@@ -9,3 +9,30 @@ Checkpoints every 20 epochs | Logs every 20 epochs
 [2025-08-27 01:28:15] epoch=20 | avg_loss=28.575698 | elapsed_s=110121.37 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_20.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_20.pth'
 [2025-08-28 05:54:33] epoch=40 | avg_loss=28.559099 | elapsed_s=212499.17 | lr=6.689718e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_40.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_40.pth'
 [2025-08-29 03:47:52] epoch=60 | avg_loss=28.540512 | elapsed_s=291298.50 | lr=5.471566e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_60.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_60.pth'
+================================================================================
+[2025-08-29 11:39:10] Starting model: noisy_D1_GRU_40_6_4096_4096
+Config: {"hidden_sizes": [4096, 4096], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.01, "batch_size": 128, "epochs": 400}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 151,548,024
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-08-29 11:39:11] RESUME=True | Resuming from 'noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_60.pth' (kind=pth, parsed_epoch=60) → start_epoch=61
+================================================================================
+[2025-08-29 11:39:26] Starting model: noisy_D1_GRU_40_6_4096_4096
+Config: {"hidden_sizes": [4096, 4096], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.01, "batch_size": 120, "epochs": 400}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 151,548,024
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-08-29 11:39:27] RESUME=True | Resuming from 'noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_60.pth' (kind=pth, parsed_epoch=60) → start_epoch=61
+================================================================================
+[2025-09-01 10:30:57] Starting model: noisy_D1_GRU_40_6_4096_4096
+Config: {"hidden_sizes": [4096, 4096], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.01, "batch_size": 120, "epochs": 400}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 151,548,024
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-09-01 10:30:58] RESUME=True | Resuming from 'noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_60.pth' (kind=pth, parsed_epoch=60) → start_epoch=61

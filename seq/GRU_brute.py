@@ -63,7 +63,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Global data/config files
-CONFIG_FILE_PATH = 'model_configs_seq2.txt'
+CONFIG_FILE_PATH = 'model_configs_seq3.txt'
 MODEL_SUMMARY_PATH = 'model_summary.txt'
 
 # Training data locations (kept consistent; original code mixed two dirs)
@@ -311,6 +311,8 @@ def main():
             # Build model name and per-model paths
             model_name   = f"noisy_D1_GRU_{sequence_length//20}_{output_size//20}_{'_'.join(map(str, hidden_sizes))}"
             print("Training for:", model_name, file=sys.__stdout__)
+            print("Training for:", model_name)
+
             model_folder = os.path.join(MODEL_ROOT_DIR, model_name)
             os.makedirs(model_folder, exist_ok=True)
 
