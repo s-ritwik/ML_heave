@@ -10,69 +10,89 @@ from sklearn.preprocessing import MinMaxScaler
 from matplotlib.animation import FFMpegWriter  # Import FFMpegWriter
 
 # ------------------------------ INPUTS ------------------------------------
-test_time  = 150                                         # seconds to simulate
-model_path = 'seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_2048_1024/epoch_100.pth'
+test_time  = 150  # seconds to simulate
+model_path = 'seq_lstm/noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512/epoch_400.pth'
 test_file_path = 'seq/train_data_normalised/D1H3_normalised.csv'  # input CSV
 
-noise_std  = 0.05   # Gaussian noise sigma to add to input at test-time
-sampling_rate = 10  # Hz
+noise_std     = 0.05  # Gaussian noise sigma to add to input at test-time
+sampling_rate = 20    # Hz (video fps & pacing)
 
 # ----------------------------- HELPERS ------------------------------------
+NAME_RATE_HZ = 20  # how many samples-per-second the <seq> and <out> fields in the model name are encoded at
+
 def parse_model_path(model_path):
-    """Parse sequence length, output size and hidden_sizes from a path that contains '_GRU_<seq>_<out>_<hs...>'."""
-    start_idx = model_path.find("_GRU_")
-    if start_idx == -1:
-        raise ValueError("Model path does not contain pattern '_GRU_'.")
-    filename = model_path[start_idx:]
-    pattern  = r"_GRU_(\d+)_(\d+)_(\d+(?:_\d+)*)"
-    match = re.match(pattern, filename)
-    if not match:
-        raise ValueError("Model path does not match expected pattern '_GRU_<seq>_<out>_<hs...>'.")
-    sequence_length = int(match.group(1)) * 20  # seconds → steps @20Hz
-    output_size     = int(match.group(2)) * 20  # seconds → steps @20Hz
-    hidden_sizes    = list(map(int, match.group(3).split("_")))
+    """
+    Parse sequence length, output size and hidden_sizes from a path that contains
+    '_(GRU|LSTM)_<seq>_<out>_<hs...>' where <seq>,<out> are in SECONDS at NAME_RATE_HZ
+    and <hs...> is '_' joined hidden sizes.
+    """
+    m = re.search(r'_(GRU|LSTM)_(\d+)_(\d+)_([\d_]+)', model_path)
+    if not m:
+        raise ValueError("Model path does not match expected pattern '_(GRU|LSTM)_<seq>_<out>_<hs...>'.")
+    sequence_length = int(m.group(2)) * NAME_RATE_HZ  # seconds → steps @NAME_RATE_HZ
+    output_size     = int(m.group(3)) * NAME_RATE_HZ  # seconds → steps @NAME_RATE_HZ
+    hidden_sizes    = list(map(int, m.group(4).split('_')))
     return sequence_length, output_size, hidden_sizes
 
 def build_output_path(model_path, sequence_length, output_size, hidden_sizes, noise_std, test_time):
-    """Compose an informative MP4 path under noisyprediction_videos/."""
-    os.makedirs("noisyprediction_videos", exist_ok=True)
-    hs_str     = "_".join(map(str, hidden_sizes))
-    parent_dir = os.path.basename(os.path.dirname(model_path))  # e.g., noisy_D1_GRU_40_6_4096_512
-    pth_base   = os.path.splitext(os.path.basename(model_path))[0]  # e.g., epoch_200
+    """Compose an informative MP4 path under seq/noisyprediction_videos/."""
+    out_dir = os.path.join("seq", "noisyprediction_videos")
+    os.makedirs(out_dir, exist_ok=True)
+    parent_dir = os.path.basename(os.path.dirname(model_path))  # e.g., noisy_D1_LSTM_40_6_2048_1024
+    pth_base   = os.path.splitext(os.path.basename(model_path))[0]  # e.g., epoch_100
     fname = f"{parent_dir}_{pth_base}_{sampling_rate}_Hz.mp4"
-    return os.path.join("seq/noisyprediction_videos", fname)
+    return os.path.join(out_dir, fname)
 
 # ------------------------------ MODEL -------------------------------------
-class GRUModel(nn.Module):
+class LSTMModel(nn.Module):
     def __init__(self, input_size=1, hidden_sizes=[512, 256], output_size=160):
-        super(GRUModel, self).__init__()
+        super().__init__()
         self.hidden_sizes = hidden_sizes
         self.num_layers   = len(hidden_sizes)
-        self.gru_layers   = nn.ModuleList()
-        self.gru_layers.append(nn.GRU(input_size, hidden_sizes[0], num_layers=1, batch_first=True))
+        self.lstm_layers  = nn.ModuleList()
+        # first layer
+        self.lstm_layers.append(nn.LSTM(input_size, hidden_sizes[0], num_layers=1, batch_first=True))
+        # stacked layers
         for i in range(1, self.num_layers):
-            self.gru_layers.append(nn.GRU(hidden_sizes[i-1], hidden_sizes[i], num_layers=1, batch_first=True))
+            self.lstm_layers.append(nn.LSTM(hidden_sizes[i-1], hidden_sizes[i], num_layers=1, batch_first=True))
         self.fc   = nn.Linear(hidden_sizes[-1], output_size)
         self.tanh = nn.Tanh()
-    def forward(self, x, h):
-        h_out = []
+
+    def forward(self, x, state):
+        """
+        x:     [B, T, 1] (we'll use T=1 for streaming)
+        state: list of (h_i, c_i) for each layer; each is [1, B, H_i]
+        """
+        next_state = []
         out = x
-        for i, gru in enumerate(self.gru_layers):
-            out, h_i = gru(out, h[i])
-            h_out.append(h_i)
-        out = out[:, -1, :]
+        for i, lstm in enumerate(self.lstm_layers):
+            h_i, c_i = state[i]
+            out, (h_o, c_o) = lstm(out, (h_i, c_i))
+            next_state.append((h_o, c_o))
+        out = out[:, -1, :]  # last timestep
         out = self.fc(out)
         out = self.tanh(out)
-        return out, h_out
+        return out, next_state
+
+    def init_hidden(self, batch_size):
+        return [
+            (torch.zeros(1, batch_size, hs, device=device),
+             torch.zeros(1, batch_size, hs, device=device))
+            for hs in self.hidden_sizes
+        ]
+
+    @staticmethod
+    def detach_state(state):
+        return [(h.detach(), c.detach()) for (h, c) in state]
 
 # ---------------------------- SETUP ---------------------------------------
 sequence_length, output_size, hidden_sizes = parse_model_path(model_path)
-os.makedirs("predictions", exist_ok=True)  # kept (not used now), harmless
+os.makedirs("predictions", exist_ok=True)  # harmless (compat)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-model = GRUModel(input_size=1, hidden_sizes=hidden_sizes, output_size=output_size).to(device)
+model = LSTMModel(input_size=1, hidden_sizes=hidden_sizes, output_size=output_size).to(device)
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.eval()
 
@@ -100,8 +120,9 @@ absolute_errors  = []
 errors_3s, errors_4s, errors_5s = [], [], []
 steps_3s, steps_4s, steps_5s = 3*sampling_rate, 4*sampling_rate, 5*sampling_rate
 
-# Hidden states
-h = [torch.zeros(1, 1, hs, device=device) for hs in hidden_sizes]
+# Hidden states (list of (h,c))
+h = model.init_hidden(batch_size=1)
+
 # -------------------------- VIDEO WRITER ----------------------------------
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
 
@@ -112,30 +133,30 @@ t_hist   = np.arange(-sequence_length, 0, 1, dtype=float) / sampling_rate       
 t_future = np.arange(1, output_size + 1, 1, dtype=float) / sampling_rate             # [1/sr, ..., Tout]
 
 out_mp4 = build_output_path(model_path, sequence_length, output_size, hidden_sizes, noise_std, test_time)
-metadata = dict(title='GRU forecast', artist='Matplotlib', comment='noisy test-time predictions')
+metadata = dict(title='LSTM forecast', artist='Matplotlib', comment='noisy test-time predictions')
 writer   = FFMpegWriter(fps=sampling_rate, metadata=metadata)
 
 # --------------------------- MAIN LOOP ------------------------------------
 testing_start_time = time.time()
-error_start_index  = start_index + sequence_length
-noisy_history = []  
+error_start_index  = start_index + sequence_length  # (kept from your GRU tester)
+noisy_history = []  # store exactly what we fed (noisy) for plotting the history
 
 with writer.saving(fig, out_mp4, dpi=300):
     with torch.no_grad():
         for i in range(start_index, end_index):
             iter_start = time.time()
 
-             # ----- noisy input (test-time) -----
-            clean_val = torch.tensor([[[test_data[i]]]], dtype=torch.float32, device=device)
+            # ----- noisy input (test-time) -----
+            clean_val = torch.tensor([[[test_data[i]]]], dtype=torch.float32, device=device)  # [1,1,1]
             noisy_val = clean_val + torch.randn_like(clean_val) * noise_std
             noisy_history.append(noisy_val.item())   # record for plotting
             if len(noisy_history) > sequence_length: # keep only last Tin samples
                 noisy_history.pop(0)
 
-            # forward pass
+            # forward pass (stateful, one sample per tick)
             t0 = time.perf_counter()
             output, h = model(noisy_val, h)
-            h = [h_i.detach() for h_i in h]
+            h = model.detach_state(h)
             t1 = time.perf_counter()
 
             pred_time = t1 - t0
@@ -148,9 +169,9 @@ with writer.saving(fig, out_mp4, dpi=300):
 
             if i >= error_start_index:
                 absolute_errors.append(abs_error.mean())
-                errors_3s.append(np.mean(abs_error[:3*sampling_rate]))
-                errors_4s.append(np.mean(abs_error[:4*sampling_rate]))
-                errors_5s.append(np.mean(abs_error[:5*sampling_rate]))
+                errors_3s.append(np.mean(abs_error[:steps_3s]))
+                errors_4s.append(np.mean(abs_error[:steps_4s]))
+                errors_5s.append(np.mean(abs_error[:steps_5s]))
 
             # ------------- PLOT (time-based, sliding window) -------------
             ax1.clear(); ax2.clear()
@@ -173,7 +194,7 @@ with writer.saving(fig, out_mp4, dpi=300):
             ax1.set_ylabel('Position (cm)')
             ax1.legend(loc='upper left')
 
-             # overlay elapsed + timing
+            # overlay elapsed + timing
             total_elapsed = time.time() - testing_start_time
             avg_ms = (np.mean(prediction_times)*1000.0) if prediction_times else 0.0
             cur_ms = pred_time*1000.0
@@ -193,13 +214,14 @@ with writer.saving(fig, out_mp4, dpi=300):
             ax2.plot(t_future, abs_error, 'b', label='Absolute error (cm)')
             ax2.axvline(0.0, linestyle=':', linewidth=1)
             ax2.set_xlim(0.0, Tout_s)
+            ax2.set_ylim(0.0, 18)
             ax2.set_xlabel('Time (s)')
             ax2.set_ylabel('Error (cm)')
             ax2.legend(loc='upper left')
 
             writer.grab_frame()
 
-            # pacing
+            # pacing (optional; keeps real-time feel in the video)
             elapsed = time.time() - iter_start
             sleep_t = (1.0/sampling_rate) - elapsed
             if sleep_t > 0:
