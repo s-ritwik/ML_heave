@@ -8,3 +8,4 @@ seq/noisyprediction_videos/*
 noisyprediction_videos/*
 *.pth
 *.pt
+*.mp4
