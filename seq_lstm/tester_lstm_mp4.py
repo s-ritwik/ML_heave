@@ -36,7 +36,7 @@ def parse_model_path(model_path):
 
 def build_output_path(model_path, sequence_length, output_size, hidden_sizes, noise_std, test_time):
     """Compose an informative MP4 path under seq/noisyprediction_videos/."""
-    out_dir = os.path.join("seq", "noisyprediction_videos")
+    out_dir = os.path.join("seq_lstm", "noisyprediction_videos")
     os.makedirs(out_dir, exist_ok=True)
     parent_dir = os.path.basename(os.path.dirname(model_path))  # e.g., noisy_D1_LSTM_40_6_2048_1024
     pth_base   = os.path.splitext(os.path.basename(model_path))[0]  # e.g., epoch_100
