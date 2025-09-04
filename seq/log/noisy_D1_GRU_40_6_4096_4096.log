@@ -36,3 +36,7 @@ noise_std=0.05, meters_to_cm=25
 Checkpoints every 20 epochs | Logs every 20 epochs
 ================================================================================
 [2025-09-01 10:30:58] RESUME=True | Resuming from 'noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_60.pth' (kind=pth, parsed_epoch=60) → start_epoch=61
+[2025-09-02 04:18:52] epoch=80 | avg_loss=36.227655 | elapsed_s=64072.03 | lr=8.179069e-03 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_80.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_80.pth'
+[2025-09-02 22:07:27] epoch=100 | avg_loss=36.228194 | elapsed_s=128186.77 | lr=6.689718e-03 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_100.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_100.pth'
+[2025-09-03 15:56:32] epoch=120 | avg_loss=36.227247 | elapsed_s=192331.47 | lr=5.471566e-03 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_120.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_120.pth'
+[2025-09-04 09:45:16] epoch=140 | avg_loss=36.228558 | elapsed_s=256455.77 | lr=4.475232e-03 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_140.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_4096/epoch_140.pth'
