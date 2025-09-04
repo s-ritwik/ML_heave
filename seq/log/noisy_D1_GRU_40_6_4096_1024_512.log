@@ -1,0 +1,15 @@
+================================================================================
+[2025-09-02 05:57:14] Starting model: noisy_D1_GRU_40_6_4096_1024_512
+Config: {"hidden_sizes": [4096, 1024, 512], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 140, "epochs": 400}
+Device: cuda | GPU_INDEX=1
+Trainable parameters: 68,527,224
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-09-02 05:57:15] RESUME=False | Starting fresh from epoch 1.
+[2025-09-02 14:31:54] epoch=20 | avg_loss=4.968428 | elapsed_s=30877.85 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_20.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_20.pth'
+[2025-09-02 23:06:04] epoch=40 | avg_loss=4.955780 | elapsed_s=61727.84 | lr=6.689718e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_40.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_40.pth'
+[2025-09-03 07:40:54] epoch=60 | avg_loss=4.928593 | elapsed_s=92618.05 | lr=5.471566e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_60.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_60.pth'
+[2025-09-03 16:14:50] epoch=80 | avg_loss=4.931651 | elapsed_s=123453.96 | lr=4.475232e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_80.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_80.pth'
+[2025-09-04 00:48:35] epoch=100 | avg_loss=4.913987 | elapsed_s=154278.84 | lr=3.660323e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_100.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_100.pth'
+[2025-09-04 09:23:12] epoch=120 | avg_loss=4.897780 | elapsed_s=185155.72 | lr=2.993804e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_120.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_4096_1024_512/epoch_120.pth'
