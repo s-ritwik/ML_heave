@@ -76,7 +76,7 @@ METERS_TO_CM      = 25          # project-specific conversion factor
 
 # Saving / logging cadence
 SAVE_EVERY = 20                 # epochs
-LOG_EVERY  = 20                 # epochs (same as SAVE_EVERY)
+LOG_EVERY  = 10                 # epochs (same as SAVE_EVERY)
 
 # Video writer settings
 VIDEO_FPS = 20

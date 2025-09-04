@@ -1,1 +1,1 @@
-hidden_sizes: [2048,1024]; sequence_length:800; output_size: 120; x_seconds: 4; w: 30; learning_rate: 0.001; batch_size: 90; epochs: 400
+hidden_sizes: [2048,1024]; sequence_length:800; output_size: 120; x_seconds: 4; w: 15; learning_rate: 0.001; batch_size: 90; epochs: 200
