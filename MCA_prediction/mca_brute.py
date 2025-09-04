@@ -38,20 +38,20 @@ import pandas as pd
 
 # ------------------------------ Defaults ------------------------------------
 DEFAULT_TRAIN_FILES = [
-    "/mnt/data/D1H1_normalised.csv",
-    "/mnt/data/D1H2_normalised.csv",
-    "/mnt/data/D1H4_normalised.csv",
-    "/mnt/data/D1H5_normalised.csv",
+    "MCA_prediction/train_data_normalised_mocap/D1H1_normalised.csv",
+    "MCA_prediction/train_data_normalised_mocap/D1H2_normalised.csv",
+    "MCA_prediction/train_data_normalised_mocap/D1H4_normalised.csv",
+    "MCA_prediction/train_data_normalised_mocap/D1H5_normalised.csv",
 ]
-DEFAULT_TEST_FILE = "/mnt/data/D1H3_normalised.csv"
+DEFAULT_TEST_FILE = "MCA_prediction/train_data_normalised_mocap/D1H3_normalised.csv"
 
 # Window sizes
 DEFAULT_N = 800   # past samples (40 s @ 20 Hz)
 DEFAULT_M = 120   # future samples (6 s @ 20 Hz)
 
 # Strides
-DEFAULT_STRIDE_TRAIN = 1
-DEFAULT_STRIDE_TEST = 1
+DEFAULT_STRIDE_TRAIN = 5
+DEFAULT_STRIDE_TEST = 5
 
 # MCA settings
 DEFAULT_CENTER = True          # subtract training mean per time-offset (row-wise mean)
@@ -66,7 +66,9 @@ DEFAULT_COL_INDEX = 0          # which numeric column to use if CSV has multiple
 DEFAULT_OUTDIR = "./mca_models"
 DEFAULT_MODEL_NAME = None      # if None, auto-generate from hyperparameters
 
-
+# Save models next to this script, under MCA_prediction/models
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_OUTDIR = os.path.join(SCRIPT_DIR, "models")
 # ------------------------------- Utils --------------------------------------
 def read_numeric_series(csv_path: str, col_index: int = 0) -> np.ndarray:
     """Load a CSV and return 1D numpy array for the selected numeric column.
