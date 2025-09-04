@@ -9,3 +9,6 @@ noisyprediction_videos/*
 *.pth
 *.pt
 *.mp4
+*.npy
+*.npz
+*.json

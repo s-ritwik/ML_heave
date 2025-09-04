@@ -50,12 +50,12 @@ DEFAULT_N = 800   # past samples (40 s @ 20 Hz)
 DEFAULT_M = 120   # future samples (6 s @ 20 Hz)
 
 # Strides
-DEFAULT_STRIDE_TRAIN = 5
-DEFAULT_STRIDE_TEST = 5
+DEFAULT_STRIDE_TRAIN = 1
+DEFAULT_STRIDE_TEST = 1
 
 # MCA settings
 DEFAULT_CENTER = True          # subtract training mean per time-offset (row-wise mean)
-DEFAULT_ENERGY_CUTOFF = 0.015  # fraction of total energy assigned to minor subspace
+DEFAULT_ENERGY_CUTOFF = 0.01  # fraction of total energy assigned to minor subspace
 DEFAULT_P = None               # if not None, overrides energy cutoff and uses exactly P minor comps
 DEFAULT_RIDGE = 1e-6           # Tikhonov regularization for stability in (B2^T B2 + λI)^{-1}
 
@@ -63,7 +63,7 @@ DEFAULT_RIDGE = 1e-6           # Tikhonov regularization for stability in (B2^T 
 DEFAULT_COL_INDEX = 0          # which numeric column to use if CSV has multiple numeric columns
 
 # Output
-DEFAULT_OUTDIR = "./mca_models"
+# DEFAULT_OUTDIR = "./mca_models"
 DEFAULT_MODEL_NAME = None      # if None, auto-generate from hyperparameters
 
 # Save models next to this script, under MCA_prediction/models
