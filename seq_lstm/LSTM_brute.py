@@ -16,28 +16,29 @@ NEW:
   (.pt preferred, else .pth) in that config’s folder and resume from it.
   If RESUME_PATH is set, it takes priority.
 """
+try:
+    import os
+    import re
+    import sys
+    import json
+    import time
+    import glob
+    import torch
+    import argparse
+    import numpy as np
+    import pandas as pd
+    import torch.nn as nn
+    import torch.optim as optim
+    import matplotlib.pyplot as plt
+    import matplotlib.animation as animation
+    import traceback
+    from datetime import datetime
 
-import os
-import re
-import sys
-import json
-import time
-import glob
-import torch
-import argparse
-import numpy as np
-import pandas as pd
-import torch.nn as nn
-import torch.optim as optim
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import traceback
-from datetime import datetime
-
-from torch.utils.data import DataLoader, TensorDataset
-from torch.optim.lr_scheduler import LambdaLR, StepLR, CosineAnnealingLR
-from sklearn.preprocessing import MinMaxScaler  # kept for compatibility
-
+    from torch.utils.data import DataLoader, TensorDataset
+    from torch.optim.lr_scheduler import LambdaLR, StepLR, CosineAnnealingLR
+    from sklearn.preprocessing import MinMaxScaler  # kept for compatibility
+except Exception as e:
+    print(f"{e} Some imports failed. Ensure you have the required packages installed.")
 # -------------------------------------------------------------------------
 # -------------------------- GLOBAL CONSTANTS ------------------------------
 # -------------------------------------------------------------------------
@@ -461,6 +462,14 @@ def main():
                     continuity_loss = torch.mean((outputs[:, 1:] - outputs[:, :-1]) ** 2)
 
                     loss = loss_first_x + loss_remaining + 0.2 * continuity_loss
+                    if not torch.isfinite(loss):
+                        with open(model_log_path, 'a') as mlog:
+                            mlog.write(f"[{now_str()}] Non-finite loss detected; skipping batch. "
+                                       f"loss_first={float(loss_first_x)} "
+                                       f"loss_rem={float(loss_remaining) if isinstance(loss_remaining, torch.Tensor) else loss_remaining} "
+                                       f"cont={float(continuity_loss)}\n")
+                        optimizer.zero_grad(set_to_none=True)
+                        continue
                     loss.backward()
                     optimizer.step()
 

@@ -1,185 +1,28 @@
 
 ================================================================================
-Timestamp: 2025-09-01 18:12:35.372822
+Timestamp: 2025-09-08 21:13:12.103796
 Traceback (most recent call last):
-  File "/home/ritwik/ML_heave/seq_lstm/torchscript_converter.py", line 16, in <module>
-    ckpt = torch.load(model_folder_ckpt_pt, map_location=device)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/serialization.py", line 1065, in load
-    with _open_file_like(f, 'rb') as opened_file:
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/serialization.py", line 468, in _open_file_like
-    return _open_file(name_or_buffer, mode)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/serialization.py", line 449, in __init__
-    super().__init__(open(name, mode))
-FileNotFoundError: [Errno 2] No such file or directory: 'noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_100.pt'
-================================================================================
-
-================================================================================
-Timestamp: 2025-09-01 18:24:18.094569
-Traceback (most recent call last):
-  File "torchscript_converter.py", line 17, in <module>
-    ckpt = torch.load(model_folder_ckpt_pt, map_location=device)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/serialization.py", line 1065, in load
-    with _open_file_like(f, 'rb') as opened_file:
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/serialization.py", line 468, in _open_file_like
-    return _open_file(name_or_buffer, mode)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/serialization.py", line 449, in __init__
-    super().__init__(open(name, mode))
-FileNotFoundError: [Errno 2] No such file or directory: 'noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_400.pt'
-================================================================================
-
-================================================================================
-Timestamp: 2025-09-01 18:24:49.202945
-Traceback (most recent call last):
-  File "torchscript_converter.py", line 18, in <module>
-    model.load_state_dict(ckpt["model_state_dict"])
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/nn/modules/module.py", line 2215, in load_state_dict
-    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
-RuntimeError: Error(s) in loading state_dict for LSTMModel:
-	size mismatch for lstm_layers.0.weight_ih_l0: copying a param with shape torch.Size([4096, 1]) from checkpoint, the shape in current model is torch.Size([8192, 1]).
-	size mismatch for lstm_layers.0.weight_hh_l0: copying a param with shape torch.Size([4096, 1024]) from checkpoint, the shape in current model is torch.Size([8192, 2048]).
-	size mismatch for lstm_layers.0.bias_ih_l0: copying a param with shape torch.Size([4096]) from checkpoint, the shape in current model is torch.Size([8192]).
-	size mismatch for lstm_layers.0.bias_hh_l0: copying a param with shape torch.Size([4096]) from checkpoint, the shape in current model is torch.Size([8192]).
-	size mismatch for lstm_layers.1.weight_ih_l0: copying a param with shape torch.Size([2048, 1024]) from checkpoint, the shape in current model is torch.Size([4096, 2048]).
-	size mismatch for lstm_layers.1.weight_hh_l0: copying a param with shape torch.Size([2048, 512]) from checkpoint, the shape in current model is torch.Size([4096, 1024]).
-	size mismatch for lstm_layers.1.bias_ih_l0: copying a param with shape torch.Size([2048]) from checkpoint, the shape in current model is torch.Size([4096]).
-	size mismatch for lstm_layers.1.bias_hh_l0: copying a param with shape torch.Size([2048]) from checkpoint, the shape in current model is torch.Size([4096]).
-	size mismatch for fc.weight: copying a param with shape torch.Size([120, 512]) from checkpoint, the shape in current model is torch.Size([120, 1024]).
-================================================================================
-
-================================================================================
-Timestamp: 2025-09-01 18:25:46.837166
-Traceback (most recent call last):
-  File "torchscript_converter.py", line 52, in <module>
-    scripted = torch.jit.script(wrapper)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_script.py", line 1432, in script
-    return _script_impl(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_script.py", line 1146, in _script_impl
-    return torch.jit._recursive.create_script_module(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 559, in create_script_module
-    return create_script_module_impl(nn_module, concrete_type, stubs_fn)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 632, in create_script_module_impl
-    script_module = torch.jit.RecursiveScriptModule._construct(cpp_module, init_fn)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_script.py", line 649, in _construct
-    init_fn(script_module)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 608, in init_fn
-    scripted = create_script_module_impl(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 636, in create_script_module_impl
-    create_methods_and_properties_from_stubs(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 468, in create_methods_and_properties_from_stubs
-    concrete_type._create_methods_and_properties(
-RuntimeError: 
-Tensor cannot be used as a tuple:
-  File "/home/ritwik/ML_heave/seq_lstm/LSTM_brute.py", line 245
-        out = x
-        for i, lstm in enumerate(self.lstm_layers):
-            h_i, c_i = state[i]
-                       ~~~~~~~~ <--- HERE
-            out, (h_o, c_o) = lstm(out, (h_i, c_i))
-            next_state.append((h_o, c_o))
-
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "torchscript_converter.py", line 55, in <module>
-    scripted = torch.jit.trace(wrapper, (x_ex, state_ex))
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_trace.py", line 1000, in trace
-    traced_func = _trace_impl(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_trace.py", line 695, in _trace_impl
-    return trace_module(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_trace.py", line 1275, in trace_module
-    module._c._create_method_from_trace(
-RuntimeError: Only tensors, lists, tuples of tensors, or dictionary of tensors can be output from traced functions
-================================================================================
-
-================================================================================
-Timestamp: 2025-09-01 18:27:51.826066
-Traceback (most recent call last):
-  File "torchscript_converter.py", line 36, in <module>
-    ckpt = torch.load("seq_lstm/noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512/epoch_400.pt", map_location=device)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/serialization.py", line 1065, in load
-    with _open_file_like(f, 'rb') as opened_file:
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/serialization.py", line 468, in _open_file_like
-    return _open_file(name_or_buffer, mode)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/serialization.py", line 449, in __init__
-    super().__init__(open(name, mode))
-FileNotFoundError: [Errno 2] No such file or directory: 'seq_lstm/noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512/epoch_400.pt'
-================================================================================
-
-================================================================================
-Timestamp: 2025-09-01 18:28:09.659499
-Traceback (most recent call last):
-  File "torchscript_converter.py", line 50, in <module>
-    scripted = torch.jit.script(wrapper)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_script.py", line 1432, in script
-    return _script_impl(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_script.py", line 1146, in _script_impl
-    return torch.jit._recursive.create_script_module(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 559, in create_script_module
-    return create_script_module_impl(nn_module, concrete_type, stubs_fn)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 632, in create_script_module_impl
-    script_module = torch.jit.RecursiveScriptModule._construct(cpp_module, init_fn)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_script.py", line 649, in _construct
-    init_fn(script_module)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 608, in init_fn
-    scripted = create_script_module_impl(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 636, in create_script_module_impl
-    create_methods_and_properties_from_stubs(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 468, in create_methods_and_properties_from_stubs
-    concrete_type._create_methods_and_properties(
-RuntimeError: 
-Tensor cannot be used as a tuple:
-  File "/home/ritwik/ML_heave/seq_lstm/LSTM_brute.py", line 245
-        out = x
-        for i, lstm in enumerate(self.lstm_layers):
-            h_i, c_i = state[i]
-                       ~~~~~~~~ <--- HERE
-            out, (h_o, c_o) = lstm(out, (h_i, c_i))
-            next_state.append((h_o, c_o))
-
-================================================================================
-
-================================================================================
-Timestamp: 2025-09-01 18:31:17.479306
-Traceback (most recent call last):
-  File "torchscript_converter.py", line 100, in <module>
+  File "/home/rycker/projects/ML_heave/seq_lstm/LSTM_brute.py", line 671, in <module>
     main()
-  File "torchscript_converter.py", line 93, in main
-    scripted = torch.jit.script(twin)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_script.py", line 1432, in script
-    return _script_impl(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_script.py", line 1146, in _script_impl
-    return torch.jit._recursive.create_script_module(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 559, in create_script_module
-    return create_script_module_impl(nn_module, concrete_type, stubs_fn)
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 636, in create_script_module_impl
-    create_methods_and_properties_from_stubs(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/jit/_recursive.py", line 468, in create_methods_and_properties_from_stubs
-    concrete_type._create_methods_and_properties(
-RuntimeError: 
-Expected integer literal for index but got a variable or non-integer. ModuleList/Sequential indexing is only supported with integer literals. For example, 'i = 4; self.layers[i](x)' will fail because i is not a literal. Enumeration is supported, e.g. 'for index, v in enumerate(self): out = v(inp)':
-  File "torchscript_converter.py", line 46
-            h_i = flat_state[idx];   idx += 1
-            c_i = flat_state[idx];   idx += 1
-            out, (h_o, c_o) = self.lstm_layers[i](out, (h_i, c_i))
-                              ~~~~~~~~~~~~~~~~~~~ <--- HERE
-            next_flat.append(h_o)
-            next_flat.append(c_o)
-
-================================================================================
-
-================================================================================
-Timestamp: 2025-09-02 19:25:30.161411
-Traceback (most recent call last):
-  File "LSTM_brute.py", line 670, in <module>
-    main()
-  File "LSTM_brute.py", line 464, in main
+  File "/home/rycker/projects/ML_heave/seq_lstm/LSTM_brute.py", line 465, in main
     loss.backward()
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/_tensor.py", line 521, in backward
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/torch/_tensor.py", line 647, in backward
     torch.autograd.backward(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/autograd/__init__.py", line 289, in backward
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/torch/autograd/__init__.py", line 354, in backward
     _engine_run_backward(
-  File "/home/ritwik/.local/lib/python3.8/site-packages/torch/autograd/graph.py", line 768, in _engine_run_backward
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/torch/autograd/graph.py", line 829, in _engine_run_backward
     return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+================================================================================
+
+================================================================================
+Timestamp: 2025-09-09 09:39:33.221042
+Traceback (most recent call last):
+  File "/home/rycker/projects/ML_heave/seq_lstm/LSTM_brute.py", line 671, in <module>
+    main()
+  File "/home/rycker/projects/ML_heave/seq_lstm/LSTM_brute.py", line 468, in main
+    total_loss += float(loss.item())
+                        ^^^^^^^^^^^
 KeyboardInterrupt
 ================================================================================
