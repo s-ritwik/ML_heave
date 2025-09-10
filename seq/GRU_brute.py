@@ -503,7 +503,7 @@ def main():
             steps_4s = 4 * 20
             steps_5s = 5 * 20
 
-            total_steps = len(test_data) - sequence_length - output_size - 1
+            total_steps = len(test_data/10) - sequence_length - output_size - 1
             start_index = sequence_length
             end_index   = start_index + total_steps
             if end_index + output_size > len(test_data):
