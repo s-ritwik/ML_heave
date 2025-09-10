@@ -39,7 +39,6 @@ from datetime import datetime
 
 from torch.utils.data import DataLoader, TensorDataset
 from torch.optim.lr_scheduler import LambdaLR, StepLR, CosineAnnealingLR
-from sklearn.preprocessing import MinMaxScaler  # (import preserved)
 
 # -------------------------------------------------------------------------
 # -------------------------- GLOBAL CONSTANTS ------------------------------
