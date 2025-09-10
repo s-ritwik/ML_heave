@@ -28,11 +28,11 @@ Checkpoints every 20 epochs | Logs every 10 epochs
 [2025-09-10 00:07:48] epoch=190 | avg_loss=0.000431 | elapsed_s=50128.95 | lr=1.481450e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_190.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_190.pth'
 [2025-09-10 00:51:29] epoch=200 | avg_loss=0.000400 | elapsed_s=52750.35 | lr=1.339797e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_200.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_200.pth'
 ================================================================================
-[2025-09-10 10:26:39] Starting model: noisy_D1_LSTM_40_6_2048_1024
+[2025-09-10 12:00:46] Starting model: noisy_D1_LSTM_40_6_2048_1024
 Config: {"hidden_sizes": [2048, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 0.001, "batch_size": 200, "epochs": 200}
-Device: cpu | GPU_INDEX=0
+Device: cuda | GPU_INDEX=0
 Trainable parameters: 29,515,896
 noise_std=0.05, meters_to_cm=25
 Checkpoints every 20 epochs | Logs every 10 epochs
 ================================================================================
-[2025-09-10 10:26:40] RESUME=True | Resuming from 'noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_200.pth' (kind=pth, parsed_epoch=200) → start_epoch=201
+[2025-09-10 12:00:47] RESUME=True | Resuming from 'noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_200.pth' (kind=pth, parsed_epoch=200) → start_epoch=201

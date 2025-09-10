@@ -8,10 +8,20 @@ import re
 import os
 from sklearn.preprocessing import MinMaxScaler
 from matplotlib.animation import FFMpegWriter  # Import FFMpegWriter
+print(torch.__version__)
+print("CUDA available:", torch.cuda.is_available())
+print("Device count:", torch.cuda.device_count())
+if torch.cuda.is_available():
+    print(f"CUDA is available. Number of devices: {torch.cuda.device_count()}")
+    for i in range(torch.cuda.device_count()):
+        print(f"Device {i}: {torch.cuda.get_device_name(i)}")
+    print(f"Current device index: {torch.cuda.current_device()}")
+else:
+    print("CUDA is NOT available, using CPU.")
 
 # ------------------------------ INPUTS ------------------------------------
 test_time  = 150  # seconds to simulate
-model_path = 'seq_lstm/noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512/epoch_400.pth'
+model_path = 'seq_lstm/noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_200.pth'
 test_file_path = 'seq/train_data_normalised/D1H3_normalised.csv'  # input CSV
 
 noise_std     = 0.05  # Gaussian noise sigma to add to input at test-time

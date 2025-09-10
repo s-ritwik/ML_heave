@@ -532,7 +532,7 @@ def main():
             steps_4s = min(4 * 20, output_size)
             steps_5s = min(5 * 20, output_size)
             errors_3s, errors_4s, errors_5s = [], [], []
-            # Streaming setup
+             # Streaming setup
             total_steps = len(test_data/100) - sequence_length - output_size - 1
             start_index = sequence_length
             end_index   = start_index + max(0, total_steps)
