@@ -507,7 +507,7 @@ def main():
                         mlog.flush()
 
             training_time = time.time() - start_time
-
+            print(f"Training completed for {model_name} in {training_time:.2f} seconds.", file=sys.__stdout__)
             # ---------------------------- Testing -----------------------------
             # Prefer the newest .pt/.pth in this model folder
             final_ckpt_path, final_kind, _ = find_latest_checkpoint_any(model_folder)
@@ -532,9 +532,8 @@ def main():
             steps_4s = min(4 * 20, output_size)
             steps_5s = min(5 * 20, output_size)
             errors_3s, errors_4s, errors_5s = [], [], []
-
             # Streaming setup
-            total_steps = len(test_data) - sequence_length - output_size - 1
+            total_steps = len(test_data/100) - sequence_length - output_size - 1
             start_index = sequence_length
             end_index   = start_index + max(0, total_steps)
             if end_index + output_size > len(test_data):

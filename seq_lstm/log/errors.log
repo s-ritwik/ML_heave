@@ -26,3 +26,56 @@ Traceback (most recent call last):
                         ^^^^^^^^^^^
 KeyboardInterrupt
 ================================================================================
+
+================================================================================
+Timestamp: 2025-09-09 09:49:31.297975
+Traceback (most recent call last):
+  File "/home/rycker/projects/ML_heave/seq_lstm/LSTM_brute.py", line 679, in <module>
+    main()
+  File "/home/rycker/projects/ML_heave/seq_lstm/LSTM_brute.py", line 451, in main
+    outputs, h = model(inputs, h)
+                 ^^^^^^^^^^^^^^^^
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rycker/projects/ML_heave/seq_lstm/LSTM_brute.py", line 247, in forward
+    out, (h_o, c_o) = lstm(out, (h_i, c_i))
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/torch/nn/modules/rnn.py", line 1124, in forward
+    result = _VF.lstm(
+             ^^^^^^^^^
+KeyboardInterrupt
+================================================================================
+
+================================================================================
+Timestamp: 2025-09-10 10:10:31.322676
+Traceback (most recent call last):
+  File "/home/rycker/projects/ML_heave/seq_lstm/LSTM_brute.py", line 683, in <module>
+    main()
+  File "/home/rycker/projects/ML_heave/seq_lstm/LSTM_brute.py", line 553, in main
+    with torch.no_grad(), writer.saving(fig, video_out_path, dpi=VIDEO_DPI):
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/matplotlib/animation.py", line 221, in saving
+    self.setup(fig, outfile, dpi, *args, **kwargs)
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/matplotlib/animation.py", line 312, in setup
+    self._run()
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/site-packages/matplotlib/animation.py", line 322, in _run
+    self._proc = subprocess.Popen(
+                 ^^^^^^^^^^^^^^^^^
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/home/rycker/src/anaconda3/envs/py311/lib/python3.11/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'ffmpeg'
+================================================================================
