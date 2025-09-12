@@ -1,0 +1,31 @@
+================================================================================
+[2025-09-11 20:02:08] Starting model: noisy_D1_LSTM_40_6_4098_2048
+Config: {"hidden_sizes": [4098, 2048], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 0.001, "batch_size": 80, "epochs": 200}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 117,833,888
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 10 epochs
+================================================================================
+[2025-09-11 20:02:09] RESUME=False | Starting fresh from epoch 1.
+================================================================================
+[2025-09-11 20:02:28] Starting model: noisy_D1_LSTM_40_6_4098_2048
+Config: {"hidden_sizes": [4098, 2048], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 0.001, "batch_size": 100, "epochs": 200}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 117,833,888
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 10 epochs
+================================================================================
+[2025-09-11 20:02:29] RESUME=False | Starting fresh from epoch 1.
+================================================================================
+[2025-09-11 21:25:43] Starting model: noisy_D1_LSTM_40_6_4098_2048
+Config: {"hidden_sizes": [4098, 2048], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 0.001, "batch_size": 100, "epochs": 200}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 117,833,888
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 10 epochs
+================================================================================
+[2025-09-11 21:25:43] RESUME=False | Starting fresh from epoch 1.
+[2025-09-12 00:23:45] epoch=10 | avg_loss=0.123230 | elapsed_s=10680.38 | lr=9.043821e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_10.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_10.pth'
+[2025-09-12 03:21:04] epoch=20 | avg_loss=0.021418 | elapsed_s=21319.61 | lr=8.179069e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_20.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_20.pth'
+[2025-09-12 06:18:19] epoch=30 | avg_loss=0.005160 | elapsed_s=31954.59 | lr=7.397004e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_30.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_30.pth'
+[2025-09-12 09:15:19] epoch=40 | avg_loss=0.003012 | elapsed_s=42574.45 | lr=6.689718e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_40.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_40.pth'

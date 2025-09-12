@@ -11,7 +11,7 @@ from matplotlib.animation import FFMpegWriter  # Import FFMpegWriter
 
 # ------------------------------ INPUTS ------------------------------------
 test_time  = 150                                         # seconds to simulate
-model_path = 'seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_2048_1024/epoch_100.pth'
+model_path = 'seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024/epoch_500.pth'
 test_file_path = 'seq/train_data_normalised/D1H3_normalised.csv'  # input CSV
 
 noise_std  = 0.05   # Gaussian noise sigma to add to input at test-time

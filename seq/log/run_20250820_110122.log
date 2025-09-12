@@ -1,7 +1,0 @@
-Training for: noisy_D1_GRU_40_6_4096_512
-Traceback (most recent call last):
-  File "/home/cp/ritwik/ML_heave/seq/GRU_brute.py", line 527, in <module>
-    main()
-  File "/home/cp/ritwik/ML_heave/seq/GRU_brute.py", line 370, in main
-    total_loss += float(loss.item())
-KeyboardInterrupt

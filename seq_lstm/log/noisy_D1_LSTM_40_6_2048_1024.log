@@ -36,3 +36,14 @@ noise_std=0.05, meters_to_cm=25
 Checkpoints every 20 epochs | Logs every 10 epochs
 ================================================================================
 [2025-09-10 12:00:47] RESUME=True | Resuming from 'noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_200.pth' (kind=pth, parsed_epoch=200) → start_epoch=201
+--------------------------------------------------------------------------------
+[2025-09-10 12:31:40] Training finished in 0.00 s
+Final checkpoint used: noisyLSTM_models_seq/noisy_D1_LSTM_40_6_2048_1024/epoch_200.pth
+Test video saved: noisyprediction_videos/noisy_D1_LSTM_40_6_2048_1024.mp4
+Average Prediction Time: 0.000301 s
+Average Absolute Error (Total): 3.960518 cm
+Average Absolute Error (3s): 3.196442 cm
+Average Absolute Error (4s): 3.400477 cm
+Average Absolute Error (5s): 3.690374 cm
+--------------------------------------------------------------------------------
+
