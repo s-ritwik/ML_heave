@@ -508,3 +508,71 @@
   "train_mocap_dir": "train_data_normalised_mocap",
   "test_file_path": "train_data_normalised_mocap/D1H3_normalised.csv"
 }
+{
+  "timestamp": "2025-09-11 20:01:32",
+  "gpu_index": 0,
+  "torch_device": "cuda",
+  "noise_std_default": 0.05,
+  "meters_to_cm": 25,
+  "save_every_epochs": 20,
+  "log_every_epochs": 10,
+  "video_fps": 20,
+  "video_dpi": 100,
+  "model_root_dir": "noisyLSTM_models_seq",
+  "plot_dir": "noisyprediction_videos",
+  "config_file_path": "model_configs_local.txt",
+  "train_dir": "train_data_normalised",
+  "train_mocap_dir": "train_data_normalised_mocap",
+  "test_file_path": "train_data_normalised_mocap/D1H3_normalised.csv"
+}
+{
+  "timestamp": "2025-09-11 20:02:08",
+  "gpu_index": 0,
+  "torch_device": "cuda",
+  "noise_std_default": 0.05,
+  "meters_to_cm": 25,
+  "save_every_epochs": 20,
+  "log_every_epochs": 10,
+  "video_fps": 20,
+  "video_dpi": 100,
+  "model_root_dir": "noisyLSTM_models_seq",
+  "plot_dir": "noisyprediction_videos",
+  "config_file_path": "model_configs_local.txt",
+  "train_dir": "train_data_normalised",
+  "train_mocap_dir": "train_data_normalised_mocap",
+  "test_file_path": "train_data_normalised_mocap/D1H3_normalised.csv"
+}
+{
+  "timestamp": "2025-09-11 20:02:27",
+  "gpu_index": 0,
+  "torch_device": "cuda",
+  "noise_std_default": 0.05,
+  "meters_to_cm": 25,
+  "save_every_epochs": 20,
+  "log_every_epochs": 10,
+  "video_fps": 20,
+  "video_dpi": 100,
+  "model_root_dir": "noisyLSTM_models_seq",
+  "plot_dir": "noisyprediction_videos",
+  "config_file_path": "model_configs_local.txt",
+  "train_dir": "train_data_normalised",
+  "train_mocap_dir": "train_data_normalised_mocap",
+  "test_file_path": "train_data_normalised_mocap/D1H3_normalised.csv"
+}
+{
+  "timestamp": "2025-09-11 21:25:42",
+  "gpu_index": 0,
+  "torch_device": "cuda",
+  "noise_std_default": 0.05,
+  "meters_to_cm": 25,
+  "save_every_epochs": 20,
+  "log_every_epochs": 10,
+  "video_fps": 20,
+  "video_dpi": 100,
+  "model_root_dir": "noisyLSTM_models_seq",
+  "plot_dir": "noisyprediction_videos",
+  "config_file_path": "model_configs_local.txt",
+  "train_dir": "train_data_normalised",
+  "train_mocap_dir": "train_data_normalised_mocap",
+  "test_file_path": "train_data_normalised_mocap/D1H3_normalised.csv"
+}

@@ -213,7 +213,7 @@ if absolute_errors:
     avg_error_4s        = float(np.mean(errors_4s))
     avg_error_5s        = float(np.mean(errors_5s))
 
-    print(f"\nSaved video: {out_mp4}")
+    # print(f"\nSaved video: {out_mp4}")
     print(f"Average Prediction Time: {avg_prediction_time:.4f} s")
     print(f"Average Absolute Error (first 3s): {avg_error_3s:.4f} cm")
     print(f"Average Absolute Error (first 4s): {avg_error_4s:.4f} cm")
