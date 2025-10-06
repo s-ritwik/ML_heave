@@ -54,3 +54,11 @@ Average Absolute Error (4s): 3.400477 cm
 Average Absolute Error (5s): 3.690374 cm
 ------------------------------------------------------------
 
+Model: noisy_D1_LSTM_40_6_4098_2048
+Average Prediction Time: 0.000291 s
+Average Absolute Error (Total): 7.823771 cm
+Average Absolute Error (3s): 5.922574 cm
+Average Absolute Error (4s): 6.550823 cm
+Average Absolute Error (5s): 7.211051 cm
+------------------------------------------------------------
+
