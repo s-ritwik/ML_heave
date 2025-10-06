@@ -1,9 +1,99 @@
 ================================================================================
-[2025-09-10 11:29:53] Starting model: noisy_D1_GRU_40_6_1024_1024_1024
-Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 256, "epochs": 300}
+[2025-09-12 10:38:04] Starting model: noisy_D1_GRU_40_6_1024_1024_1024
+Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 300, "epochs": 300}
 Device: cuda | GPU_INDEX=0
 Trainable parameters: 15,873,144
 noise_std=0.05, meters_to_cm=25
 Checkpoints every 20 epochs | Logs every 20 epochs
 ================================================================================
-[2025-09-10 11:29:55] RESUME=False | Starting fresh from epoch 1.
+[2025-09-12 10:38:05] RESUME=False | Starting fresh from epoch 1.
+[2025-09-12 12:57:28] Non-finite loss detected; skipping batch. loss_first=nan loss_rem=nan cont=nan
+================================================================================
+[2025-09-12 17:31:05] Starting model: noisy_D1_GRU_40_6_1024_1024_1024
+Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 220, "epochs": 300}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 15,873,144
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-09-12 17:31:06] RESUME=False | Starting fresh from epoch 1.
+================================================================================
+[2025-09-17 00:16:24] Starting model: noisy_D1_GRU_40_6_1024_1024_1024
+Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 220, "epochs": 300}
+Device: cuda | GPU_INDEX=1
+Trainable parameters: 15,873,144
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-09-17 00:16:26] RESUME=True | No checkpoint found for 'noisy_D1_GRU_40_6_1024_1024_1024'. Starting fresh.
+================================================================================
+[2025-09-17 00:17:04] Starting model: noisy_D1_GRU_40_6_1024_1024_1024
+Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 200, "epochs": 300}
+Device: cuda | GPU_INDEX=1
+Trainable parameters: 15,873,144
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-09-17 00:17:05] RESUME=True | No checkpoint found for 'noisy_D1_GRU_40_6_1024_1024_1024'. Starting fresh.
+================================================================================
+[2025-09-17 00:17:24] Starting model: noisy_D1_GRU_40_6_1024_1024_1024
+Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 220, "epochs": 300}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 15,873,144
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-09-17 00:17:25] RESUME=True | No checkpoint found for 'noisy_D1_GRU_40_6_1024_1024_1024'. Starting fresh.
+================================================================================
+[2025-09-17 10:32:40] Starting model: noisy_D1_GRU_40_6_1024_1024_1024
+Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 220, "epochs": 300}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 15,873,144
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-09-17 10:32:40] RESUME=True | No checkpoint found for 'noisy_D1_GRU_40_6_1024_1024_1024'. Starting fresh.
+[2025-09-17 12:36:38] epoch=20 | avg_loss=0.013086 | elapsed_s=7437.52 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_20.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_20.pth'
+[2025-09-17 14:40:38] epoch=40 | avg_loss=0.006081 | elapsed_s=14877.93 | lr=6.689718e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_40.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_40.pth'
+[2025-09-18 13:09:39] epoch=60 | avg_loss=0.399551 | elapsed_s=7806.91 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_60.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_60.pth'
+[2025-09-18 15:18:20] epoch=80 | avg_loss=0.639618 | elapsed_s=15527.34 | lr=6.689718e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_80.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_80.pth'
+[2025-09-18 17:26:37] epoch=100 | avg_loss=0.317420 | elapsed_s=23224.91 | lr=5.471566e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_100.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_100.pth'
+[2025-09-18 19:35:05] epoch=120 | avg_loss=0.273879 | elapsed_s=30932.33 | lr=4.475232e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_120.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_120.pth'
+[2025-09-18 21:43:12] epoch=140 | avg_loss=0.248396 | elapsed_s=38619.45 | lr=3.660323e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_140.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_140.pth'
+[2025-09-18 23:51:32] epoch=160 | avg_loss=0.331159 | elapsed_s=46319.61 | lr=2.993804e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_160.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_160.pth'
+[2025-09-19 02:00:09] epoch=180 | avg_loss=0.263356 | elapsed_s=54036.73 | lr=2.448653e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_180.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_180.pth'
+[2025-09-19 04:08:47] epoch=200 | avg_loss=0.237007 | elapsed_s=61754.35 | lr=2.002770e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_200.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_200.pth'
+[2025-09-19 06:17:29] epoch=220 | avg_loss=0.168623 | elapsed_s=69476.46 | lr=1.638080e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_220.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_220.pth'
+[2025-09-19 08:26:10] epoch=240 | avg_loss=0.162866 | elapsed_s=77198.14 | lr=1.339797e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_240.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_240.pth'
+[2025-09-19 10:34:46] epoch=260 | avg_loss=0.096179 | elapsed_s=84913.92 | lr=1.095829e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_260.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_260.pth'
+[2025-09-19 12:43:29] epoch=280 | avg_loss=0.075666 | elapsed_s=92636.49 | lr=8.962862e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_280.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_280.pth'
+[2025-09-19 14:52:26] epoch=300 | avg_loss=0.063603 | elapsed_s=100374.04 | lr=7.330787e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_300.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_300.pth'
+================================================================================
+[2025-10-03 16:19:11] Starting model: noisy_D1_GRU_40_6_1024_1024_1024
+Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 7.330787e-05, "batch_size": 220, "epochs": 300}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 15,873,144
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-10-03 16:19:12] RESUME=True | Resuming from 'noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_300.pth' (kind=pth, parsed_epoch=300) → start_epoch=301
+================================================================================
+[2025-10-03 16:20:23] Starting model: noisy_D1_GRU_40_6_1024_1024_1024
+Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 7.330787e-05, "batch_size": 220, "epochs": 300}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 15,873,144
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-10-03 16:20:23] RESUME=True | Resuming from 'noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_300.pth' (kind=pth, parsed_epoch=300) → start_epoch=301
+--------------------------------------------------------------------------------
+[2025-10-03 17:15:45] Training finished in 0.00 s
+Final checkpoint used: noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_1024/epoch_300.pth
+Test video saved: noisyprediction_videos/noisy_D1_GRU_40_6_1024_1024_1024.mp4
+Average Prediction Time: 0.000641 s
+Average Absolute Error (Total): 7.423635 cm
+Average Absolute Error (3s): 5.844460 cm
+Average Absolute Error (4s): 5.791617 cm
+Average Absolute Error (5s): 6.610019 cm
+--------------------------------------------------------------------------------
+

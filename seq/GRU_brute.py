@@ -62,7 +62,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Global data/config files
-CONFIG_FILE_PATH = 'model_configs_seq3.txt'
+CONFIG_FILE_PATH = 'model_configs_seq.txt'
 MODEL_SUMMARY_PATH = 'model_summary.txt'
 
 # Training data locations (kept consistent; original code mixed two dirs)
@@ -87,6 +87,64 @@ VIDEO_DPI = 100
 # --------------------- RESUME CONTROLS (overridden by CLI) ---------------------
 RESUME = False
 RESUME_PATH = ""   # e.g. "noisyGRU_models_seq/noisy_D1_GRU_20_8_512_256/epoch_100.pt"
+
+
+# # ======== DEBUG HARNESS (paste after imports) ========
+# import os, sys, logging, signal, faulthandler, atexit, traceback, time
+# LOGFILE = os.path.expanduser("~/gru_debug.log")
+# os.environ.setdefault("CUDA_LAUNCH_BLOCKING", "1")  # catch async CUDA errors
+
+# # log to both console and file
+# logging.basicConfig(
+#     level=logging.DEBUG,
+#     format="%(asctime)s | %(levelname)s | %(message)s",
+#     handlers=[logging.StreamHandler(sys.stdout),
+#               logging.FileHandler(LOGFILE, mode="a")]
+# )
+# log = logging.getLogger("GRU_BRUTE")
+# log.info("PID=%s starting; log=%s", os.getpid(), LOGFILE)
+
+# # faulthandler will dump traces on fatal signals
+# faulthandler.enable(open(LOGFILE, "a"))  # also mirrors to stderr
+
+# # dump on demand: kill -USR1 <pid>
+# try:
+#     faulthandler.register(signal.SIGUSR1, file=open(LOGFILE, "a"), all_threads=True)
+# except Exception:
+#     pass
+
+# # catch ANY uncaught exception
+# def _excepthook(exc_type, exc, tb):
+#     log.critical("UNCAUGHT EXCEPTION", exc_info=(exc_type, exc, tb))
+#     # ensure we see something even if logging breaks
+#     traceback.print_exception(exc_type, exc, tb, file=sys.stderr)
+#     os._exit(1)
+# sys.excepthook = _excepthook
+
+# # log on SIGTERM/SIGINT to know if something external stops us
+# def _sig_handler(signum, frame):
+#     log.error("Received signal %s; dumping stack...", signum)
+#     traceback.print_stack(frame, file=sys.stderr)
+#     faulthandler.dump_traceback(file=open(LOGFILE, "a"), all_threads=True)
+#     os._exit(128 + signum)
+# for s in (signal.SIGTERM, signal.SIGINT):
+#     try: signal.signal(s, _sig_handler)
+#     except Exception: pass
+
+# # heartbeat so you know if we hang vs exit
+# def _heartbeat():
+#     log.debug("heartbeat: alive at %s", time.strftime("%H:%M:%S"))
+#     sys.stdout.flush()
+#     sys.stderr.flush()
+#     # schedule another beat
+#     import threading; threading.Timer(60.0, _heartbeat).start()
+# _heartbeat()
+
+# @atexit.register
+# def _on_exit():
+#     log.info("Process exiting (atexit). If unexpected, scroll above for cause.")
+# # ======== END DEBUG HARNESS ========
+
 
 # -------------------------------------------------------------------------
 # -------------------------- UTILITY FUNCTIONS ----------------------------
@@ -516,6 +574,7 @@ def main():
             writer = animation.FFMpegWriter(fps=VIDEO_FPS)
 
             video_out_path = os.path.join(PLOT_DIR, f"{model_name}.mp4")
+            print(f"Testing {model_name}: generating video '{video_out_path}' ...", file=sys.__stdout__)
             with torch.no_grad(), writer.saving(fig, video_out_path, dpi=VIDEO_DPI):
                 for i in range(start_index, end_index):
                     noisy_series = np.full(len(test_data), np.nan, dtype=np.float32)
