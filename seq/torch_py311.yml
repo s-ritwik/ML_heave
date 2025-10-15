@@ -1,0 +1,24 @@
+name: torch_py311
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pytorch>=2.2
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.1  # adjust to match your GPU driver (12.1 for CUDA 12.x)
+  - cudatoolkit
+  - numpy>=1.26
+  - pandas
+  - matplotlib>=3.8
+  - ffmpeg  # for animation.FFMpegWriter
+  - tqdm
+  - pip
+  - pip:
+      - seaborn
+      - scikit-learn
+      - moviepy
+      - opencv-python
+      - imageio

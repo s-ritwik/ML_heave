@@ -17,3 +17,4 @@ noisyprediction_videos/*
 !n*.log
 run*.log
 run*.txt
+*model*.txt

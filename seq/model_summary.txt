@@ -94,3 +94,35 @@ Average Absolute Error (4s): 5.7916 cm
 Average Absolute Error (5s): 6.6100 cm
 
 ------------------------------------------------------------
+Model: noisy_D1_GRU_40_6_2048_1024
+Average Prediction Time: 0.0006 s
+Average Absolute Error (Total): 4.0167 cm
+Average Absolute Error (3s): 3.3826 cm
+Average Absolute Error (4s): 3.5558 cm
+Average Absolute Error (5s): 3.7968 cm
+
+------------------------------------------------------------
+Model: noisy_D1_GRU_40_6_512_512_512_512
+Average Prediction Time: 0.0007 s
+Average Absolute Error (Total): 4.3894 cm
+Average Absolute Error (3s): 3.6690 cm
+Average Absolute Error (4s): 3.8859 cm
+Average Absolute Error (5s): 4.1546 cm
+
+------------------------------------------------------------
+Model: noisy_D1_GRU_40_6_512_512_512_128
+Average Prediction Time: 0.0007 s
+Average Absolute Error (Total): 4.7688 cm
+Average Absolute Error (3s): 4.1209 cm
+Average Absolute Error (4s): 4.3210 cm
+Average Absolute Error (5s): 4.5634 cm
+
+------------------------------------------------------------
+Model: noisy_D1_GRU_40_6_1024_512_256_128
+Average Prediction Time: 0.0008 s
+Average Absolute Error (Total): 4.8344 cm
+Average Absolute Error (3s): 3.9833 cm
+Average Absolute Error (4s): 4.2339 cm
+Average Absolute Error (5s): 4.5336 cm
+
+------------------------------------------------------------

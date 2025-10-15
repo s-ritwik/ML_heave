@@ -1,0 +1,40 @@
+================================================================================
+[2025-10-09 17:50:52] Starting model: noisy_D1_GRU_40_6_512_512_512_512
+Config: {"hidden_sizes": [512, 512, 512, 512], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 512, "epochs": 400}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 5,580,408
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-10-09 17:50:53] RESUME=False | Starting fresh from epoch 1.
+[2025-10-09 18:55:55] epoch=20 | avg_loss=0.039158 | elapsed_s=3901.88 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_20.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_20.pth'
+[2025-10-09 20:00:30] epoch=40 | avg_loss=0.011435 | elapsed_s=7776.93 | lr=6.689718e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_40.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_40.pth'
+[2025-10-09 21:04:49] epoch=60 | avg_loss=0.006073 | elapsed_s=11635.33 | lr=5.471566e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_60.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_60.pth'
+[2025-10-09 22:09:43] epoch=80 | avg_loss=0.004083 | elapsed_s=15529.61 | lr=4.475232e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_80.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_80.pth'
+[2025-10-09 23:14:45] epoch=100 | avg_loss=0.003353 | elapsed_s=19431.78 | lr=3.660323e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_100.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_100.pth'
+[2025-10-10 00:19:51] epoch=120 | avg_loss=0.002520 | elapsed_s=23337.18 | lr=2.993804e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_120.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_120.pth'
+[2025-10-10 01:24:51] epoch=140 | avg_loss=0.002038 | elapsed_s=27237.59 | lr=2.448653e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_140.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_140.pth'
+[2025-10-10 02:29:13] epoch=160 | avg_loss=0.001732 | elapsed_s=31099.57 | lr=2.002770e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_160.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_160.pth'
+[2025-10-10 03:33:36] epoch=180 | avg_loss=0.001410 | elapsed_s=34962.85 | lr=1.638080e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_180.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_180.pth'
+[2025-10-10 04:38:39] epoch=200 | avg_loss=0.001233 | elapsed_s=38865.36 | lr=1.339797e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_200.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_200.pth'
+[2025-10-10 05:43:43] epoch=220 | avg_loss=0.001030 | elapsed_s=42769.55 | lr=1.095829e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_220.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_220.pth'
+[2025-10-10 06:48:50] epoch=240 | avg_loss=0.000931 | elapsed_s=46676.31 | lr=8.962862e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_240.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_240.pth'
+[2025-10-10 07:53:45] epoch=260 | avg_loss=0.000844 | elapsed_s=50571.72 | lr=7.330787e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_260.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_260.pth'
+[2025-10-10 08:58:04] epoch=280 | avg_loss=0.000775 | elapsed_s=54430.60 | lr=5.995901e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_280.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_280.pth'
+[2025-10-10 10:02:38] epoch=300 | avg_loss=0.000704 | elapsed_s=58304.29 | lr=4.904089e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_300.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_300.pth'
+[2025-10-10 11:07:44] epoch=320 | avg_loss=0.000656 | elapsed_s=62210.70 | lr=4.011089e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_320.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_320.pth'
+[2025-10-10 12:12:49] epoch=340 | avg_loss=0.000623 | elapsed_s=66115.98 | lr=3.280697e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_340.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_340.pth'
+[2025-10-10 13:17:51] epoch=360 | avg_loss=0.000589 | elapsed_s=70017.55 | lr=2.683305e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_360.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_360.pth'
+[2025-10-10 14:22:42] epoch=380 | avg_loss=0.000565 | elapsed_s=73908.63 | lr=2.194694e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_380.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_380.pth'
+[2025-10-10 15:27:02] epoch=400 | avg_loss=0.000542 | elapsed_s=77768.68 | lr=1.795055e-05 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_400.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_400.pth'
+--------------------------------------------------------------------------------
+[2025-10-10 16:20:07] Training finished in 77768.75 s
+Final checkpoint used: noisyGRU_models_seq/noisy_D1_GRU_40_6_512_512_512_512/epoch_400.pth
+Test video saved: noisyprediction_videos/noisy_D1_GRU_40_6_512_512_512_512.mp4
+Average Prediction Time: 0.000708 s
+Average Absolute Error (Total): 4.389356 cm
+Average Absolute Error (3s): 3.669004 cm
+Average Absolute Error (4s): 3.885894 cm
+Average Absolute Error (5s): 4.154607 cm
+--------------------------------------------------------------------------------
+
