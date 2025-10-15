@@ -50,5 +50,12 @@ Average Absolute Error (Total): 4.016730 cm
 Average Absolute Error (3s): 3.382623 cm
 Average Absolute Error (4s): 3.555761 cm
 Average Absolute Error (5s): 3.796771 cm
---------------------------------------------------------------------------------
-
+================================================================================
+[2025-10-15 10:42:19] Starting model: noisy_D1_GRU_40_6_2048_1024
+Config: {"hidden_sizes": [2048, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 4e-05, "batch_size": 340, "epochs": 600}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 22,167,672
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-10-15 10:42:20] RESUME=True | Resuming from 'noisyGRU_models_seq/noisy_D1_GRU_40_6_2048_1024/epoch_300.pth' (kind=pth, parsed_epoch=300) → start_epoch=301

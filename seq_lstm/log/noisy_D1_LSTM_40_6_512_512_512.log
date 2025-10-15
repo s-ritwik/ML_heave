@@ -1,0 +1,9 @@
+================================================================================
+[2025-10-15 10:39:22] Starting model: noisy_D1_LSTM_40_6_512_512_512
+Config: {"hidden_sizes": [512, 512, 512], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 0.001, "batch_size": 800, "epochs": 400}
+Device: cuda | GPU_INDEX=1
+Trainable parameters: 5,318,776
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 10 epochs
+================================================================================
+[2025-10-15 10:39:22] RESUME=True | No checkpoint found for 'noisy_D1_LSTM_40_6_512_512_512'. Starting fresh.
