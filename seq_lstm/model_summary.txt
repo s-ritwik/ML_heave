@@ -1,0 +1,80 @@
+Model: noisy_D1_GRU_50_6_512_512
+Average Prediction Time: 0.0005 s
+Average Absolute Error (Total): 4.8871 cm
+Average Absolute Error (3s): 4.0579 cm
+Average Absolute Error (4s): 4.2902 cm
+Average Absolute Error (5s): 4.6057 cm
+
+------------------------------------------------------------
+Model: noisy_D1_GRU_40_6_1024_1024
+Average Prediction Time: 0.0005 s
+Average Absolute Error (Total): 3.8599 cm
+Average Absolute Error (3s): 3.1286 cm
+Average Absolute Error (4s): 3.3240 cm
+Average Absolute Error (5s): 3.6022 cm
+
+------------------------------------------------------------
+Model: noisy_D1_GRU_40_6_2048_1024
+Average Prediction Time: 0.0007 s
+Average Absolute Error (Total): nan cm
+Average Absolute Error (3s): nan cm
+Average Absolute Error (4s): nan cm
+Average Absolute Error (5s): nan cm
+
+------------------------------------------------------------
+Model: noisy_D1_GRU_40_6_64_64_64_64
+Average Prediction Time: 0.0007 s
+Average Absolute Error (Total): 10.1470 cm
+Average Absolute Error (3s): 8.2221 cm
+Average Absolute Error (4s): 8.5010 cm
+Average Absolute Error (5s): 9.0304 cm
+
+------------------------------------------------------------
+Model: noisy_D1_GRU_40_6_128_128_64_64
+Average Prediction Time: 0.0007 s
+Average Absolute Error (Total): 6.4729 cm
+Average Absolute Error (3s): 6.0010 cm
+Average Absolute Error (4s): 5.5838 cm
+Average Absolute Error (5s): 5.9088 cm
+
+------------------------------------------------------------
+Model: noisy_D1_LSTM_40_6_1024_512
+Average Prediction Time: 0.000370 s
+Average Absolute Error (Total): 4.506989 cm
+Average Absolute Error (3s): 4.635699 cm
+Average Absolute Error (4s): 4.426079 cm
+Average Absolute Error (5s): 4.330149 cm
+------------------------------------------------------------
+
+Model: noisy_D1_LSTM_40_6_2048_1024
+Average Prediction Time: 0.000301 s
+Average Absolute Error (Total): 3.960518 cm
+Average Absolute Error (3s): 3.196442 cm
+Average Absolute Error (4s): 3.400477 cm
+Average Absolute Error (5s): 3.690374 cm
+------------------------------------------------------------
+
+Model: noisy_D1_LSTM_40_6_2048_1024_512
+Average Prediction Time: 0.000683 s
+Average Absolute Error (Total): 5.877951 cm
+Average Absolute Error (3s): 5.874991 cm
+Average Absolute Error (4s): 5.875756 cm
+Average Absolute Error (5s): 5.876470 cm
+------------------------------------------------------------
+
+Model: noisy_D1_LSTM_40_6_4098_2048
+Average Prediction Time: 0.000291 s
+Average Absolute Error (Total): 7.823771 cm
+Average Absolute Error (3s): 5.922574 cm
+Average Absolute Error (4s): 6.550823 cm
+Average Absolute Error (5s): 7.211051 cm
+------------------------------------------------------------
+
+Model: noisy_D1_LSTM_40_6_4098_2048
+Average Prediction Time: 0.000284 s
+Average Absolute Error (Total): 8.250333 cm
+Average Absolute Error (3s): 6.392868 cm
+Average Absolute Error (4s): 6.951584 cm
+Average Absolute Error (5s): 7.612048 cm
+------------------------------------------------------------
+

@@ -130,11 +130,32 @@ Checkpoints every 20 epochs | Logs every 10 epochs
 [2025-09-19 17:46:13] epoch=380 | avg_loss=0.000175 | elapsed_s=78054.59 | lr=1.717865e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_380.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_380.pth'
 [2025-09-19 20:52:28] epoch=390 | avg_loss=0.000171 | elapsed_s=89229.40 | lr=1.553606e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_390.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_390.pth'
 ================================================================================
-[2025-10-03 17:06:40] Starting model: noisy_D1_LSTM_40_6_4098_2048
-Config: {"hidden_sizes": [4098, 2048], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 3.471566e-05, "batch_size": 90, "epochs": 500}
+[2025-10-06 11:21:48] Starting model: noisy_D1_LSTM_40_6_4098_2048
+Config: {"hidden_sizes": [4098, 2048], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 1.553606e-05, "batch_size": 90, "epochs": 400}
+Device: cpu | GPU_INDEX=1
+Trainable parameters: 117,833,888
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 10 epochs
+================================================================================
+[2025-10-06 11:21:49] RESUME=True | Resuming from 'noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_390.pth' (kind=pth, parsed_epoch=390) → start_epoch=391
+================================================================================
+[2025-10-06 11:23:00] Starting model: noisy_D1_LSTM_40_6_4098_2048
+Config: {"hidden_sizes": [4098, 2048], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 1.553606e-05, "batch_size": 90, "epochs": 400}
 Device: cuda | GPU_INDEX=0
 Trainable parameters: 117,833,888
 noise_std=0.05, meters_to_cm=25
 Checkpoints every 20 epochs | Logs every 10 epochs
 ================================================================================
-[2025-10-03 17:06:40] RESUME=False | Starting fresh from epoch 1.
+[2025-10-06 11:23:01] RESUME=True | Resuming from 'noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_390.pth' (kind=pth, parsed_epoch=390) → start_epoch=391
+[2025-10-06 14:29:11] epoch=400 | avg_loss=0.000197 | elapsed_s=11169.43 | lr=1.405053e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_400.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_400.pth'
+--------------------------------------------------------------------------------
+[2025-10-06 14:59:03] Training finished in 11170.66 s
+Final checkpoint used: noisyLSTM_models_seq/noisy_D1_LSTM_40_6_4098_2048/epoch_400.pth
+Test video saved: noisyprediction_videos/noisy_D1_LSTM_40_6_4098_2048.mp4
+Average Prediction Time: 0.000284 s
+Average Absolute Error (Total): 8.250333 cm
+Average Absolute Error (3s): 6.392868 cm
+Average Absolute Error (4s): 6.951584 cm
+Average Absolute Error (5s): 7.612048 cm
+--------------------------------------------------------------------------------
+
