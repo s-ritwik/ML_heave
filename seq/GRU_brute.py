@@ -69,6 +69,9 @@ MODEL_SUMMARY_PATH = 'model_summary.txt'
 TRAIN_DIR = 'train_data_normalised'
 TRAIN_MOCAP_DIR = 'train_data_normalised_mocap'  # used for test file below
 
+# <<< NEW: velocity-augmented dataset directory
+TRAIN_DIR_WITH_VEL = 'train_data_mekf_vel'  # z + velocity files live here
+
 # Testing
 TEST_FILE_PATH = os.path.join(TRAIN_MOCAP_DIR, 'D1H3_normalised.csv')
 
@@ -88,13 +91,13 @@ VIDEO_DPI = 100
 RESUME = False
 RESUME_PATH = ""   # e.g. "noisyGRU_models_seq/noisy_D1_GRU_20_8_512_256/epoch_100.pt"
 
+# <<< NEW (set by argparse at the bottom)
+USE_VEL = False
 
 # # ======== DEBUG HARNESS (paste after imports) ========
 # import os, sys, logging, signal, faulthandler, atexit, traceback, time
 # LOGFILE = os.path.expanduser("~/gru_debug.log")
 # os.environ.setdefault("CUDA_LAUNCH_BLOCKING", "1")  # catch async CUDA errors
-
-# # log to both console and file
 # logging.basicConfig(
 #     level=logging.DEBUG,
 #     format="%(asctime)s | %(levelname)s | %(message)s",
@@ -103,25 +106,16 @@ RESUME_PATH = ""   # e.g. "noisyGRU_models_seq/noisy_D1_GRU_20_8_512_256/epoch_1
 # )
 # log = logging.getLogger("GRU_BRUTE")
 # log.info("PID=%s starting; log=%s", os.getpid(), LOGFILE)
-
-# # faulthandler will dump traces on fatal signals
 # faulthandler.enable(open(LOGFILE, "a"))  # also mirrors to stderr
-
-# # dump on demand: kill -USR1 <pid>
 # try:
 #     faulthandler.register(signal.SIGUSR1, file=open(LOGFILE, "a"), all_threads=True)
 # except Exception:
 #     pass
-
-# # catch ANY uncaught exception
 # def _excepthook(exc_type, exc, tb):
 #     log.critical("UNCAUGHT EXCEPTION", exc_info=(exc_type, exc, tb))
-#     # ensure we see something even if logging breaks
 #     traceback.print_exception(exc_type, exc, tb, file=sys.stderr)
 #     os._exit(1)
 # sys.excepthook = _excepthook
-
-# # log on SIGTERM/SIGINT to know if something external stops us
 # def _sig_handler(signum, frame):
 #     log.error("Received signal %s; dumping stack...", signum)
 #     traceback.print_stack(frame, file=sys.stderr)
@@ -130,16 +124,12 @@ RESUME_PATH = ""   # e.g. "noisyGRU_models_seq/noisy_D1_GRU_20_8_512_256/epoch_1
 # for s in (signal.SIGTERM, signal.SIGINT):
 #     try: signal.signal(s, _sig_handler)
 #     except Exception: pass
-
-# # heartbeat so you know if we hang vs exit
 # def _heartbeat():
 #     log.debug("heartbeat: alive at %s", time.strftime("%H:%M:%S"))
 #     sys.stdout.flush()
 #     sys.stderr.flush()
-#     # schedule another beat
 #     import threading; threading.Timer(60.0, _heartbeat).start()
 # _heartbeat()
-
 # @atexit.register
 # def _on_exit():
 #     log.info("Process exiting (atexit). If unexpected, scroll above for cause.")
@@ -207,6 +197,31 @@ def load_data(file_list, data_dir=TRAIN_MOCAP_DIR):
         df = pd.read_csv(file_path, header=None)
         data.extend(df.iloc[:, 0].values)
     return np.array(data, dtype=np.float32)
+
+# <<< NEW: helper to detect header (best-effort)
+def has_header(csv_path):
+    try:
+        first = pd.read_csv(csv_path, nrows=1, header=None)
+        return not np.all(np.isfinite(pd.to_numeric(first.iloc[0, :], errors='coerce')))
+    except Exception:
+        return False
+
+# <<< NEW: 1-col and 2-col loaders for the velocity dataset
+def load_data_1col(file_list, data_dir):
+    data = []
+    for file_name in file_list:
+        df = pd.read_csv(os.path.join(data_dir, file_name), header=None)
+        data.extend(df.iloc[:, 0].values)
+    return np.array(data, dtype=np.float32)
+
+def load_data_2col(file_list, data_dir):
+    chunks = []
+    for file_name in file_list:
+        path = os.path.join(data_dir, file_name)
+        df = pd.read_csv(path, header=0 if has_header(path) else None)
+        arr = df.iloc[:, :2].astype(np.float32).values  # take first two columns: [z, vz]
+        chunks.append(arr)
+    return np.vstack(chunks)
 
 def get_current_lr(optimizer):
     return optimizer.param_groups[0]['lr']
@@ -342,8 +357,25 @@ def main():
     with open(CONFIG_FILE_PATH, 'r') as f:
         model_configs = [line.strip() for line in f if line.strip()]
 
-    # Load test data (kept as original)
-    test_data = pd.read_csv(TEST_FILE_PATH, header=None).iloc[:, 0].values.astype(np.float32)
+    # <<< NEW: pick sources based on --vel
+    if USE_VEL:
+        train_dir = TRAIN_DIR_WITH_VEL
+        test_candidates = sorted(glob.glob(os.path.join(TRAIN_DIR_WITH_VEL, "D1H3*.csv")))
+        if not test_candidates:
+            raise FileNotFoundError("No D1H3*.csv found in TRAIN_DIR_WITH_VEL.")
+        test_file = test_candidates[0]
+        input_size = 2
+        in_tag = "in2_vel"
+        # load test data as 2-col (z+vz)
+        df_test = pd.read_csv(test_file, header=0 if has_header(test_file) else None)
+        test_data = df_test.iloc[:, :2].astype(np.float32).values  # [T,2]
+    else:
+        train_dir = TRAIN_DIR
+        test_file = TEST_FILE_PATH
+        input_size = 1
+        in_tag = "in1"
+        # Load test data (kept as original)
+        test_data = pd.read_csv(test_file, header=None).iloc[:, 0].values.astype(np.float32)  # [T]
     meters_to_cm = METERS_TO_CM
 
     # Prepare model summary file (append mode)
@@ -366,7 +398,7 @@ def main():
             noise_std       = NOISE_STD_DEFAULT  # single global noise hyperparam for all models
 
             # Build model name and per-model paths
-            model_name   = f"noisy_D1_GRU_{sequence_length//20}_{output_size//20}_{'_'.join(map(str, hidden_sizes))}"
+            model_name   = f"noisy_D1_GRU_{sequence_length//20}_{output_size//20}_{'_'.join(map(str, hidden_sizes))}_{in_tag}"  # <<< NEW (suffix)
             print("Training for:", model_name, file=sys.__stdout__)
             print("Training for:", model_name)
 
@@ -374,7 +406,7 @@ def main():
             os.makedirs(model_folder, exist_ok=True)
 
             # Initialize model/optimizer/etc.
-            model = GRUModel(input_size=1, hidden_sizes=hidden_sizes, output_size=output_size).to(device)
+            model = GRUModel(input_size=input_size, hidden_sizes=hidden_sizes, output_size=output_size).to(device)  # <<< NEW (input_size)
             criterion = nn.MSELoss()
             optimizer = optim.Adam(model.parameters(), lr=learning_rate)
             scheduler = get_scheduler(optimizer, config)
@@ -391,21 +423,31 @@ def main():
                 mlog.write(f"Trainable parameters: {n_params:,}\n")
                 mlog.write(f"noise_std={noise_std}, meters_to_cm={meters_to_cm}\n")
                 mlog.write(f"Checkpoints every {SAVE_EVERY} epochs | Logs every {LOG_EVERY} epochs\n")
+                mlog.write(f"Input size: {input_size} ({'z' if input_size==1 else 'z+vz'})\n")  # <<< NEW
                 mlog.write('='*80 + '\n')
                 mlog.flush()
 
             # --------------------- Prepare training data ----------------------
-            csv_files   = os.listdir(TRAIN_DIR)
+            csv_files   = [f for f in os.listdir(train_dir) if f.endswith('.csv')]
             train_files = [file for file in csv_files if 'D1H' in file and 'D1H3' not in file]
-            train_data  = load_data(train_files, data_dir=TRAIN_DIR)
 
-            # Build sequences (fast, without Python loop)
             total = sequence_length + output_size
-            if len(train_data) < total:
-                raise ValueError(f"Training data too short ({len(train_data)}) for total window size {total}.")
-            windows = np.lib.stride_tricks.sliding_window_view(train_data, total)  # [N, total]
-            X_np = windows[:, :sequence_length][..., None].copy()  # [N, seq_len, 1]
-            y_np = windows[:, sequence_length:].copy()              # [N, out_size]
+
+            if input_size == 1:
+                series = load_data_1col(train_files, data_dir=train_dir)  # [T]
+                if len(series) < total:
+                    raise ValueError(f"Training data too short ({len(series)}) for total window size {total}.")
+                windows = np.lib.stride_tricks.sliding_window_view(series, total)  # [N, total]
+                X_np = windows[:, :sequence_length][..., None].copy()              # [N, seq_len, 1]
+                y_np = windows[:, sequence_length:].copy()                         # [N, out_size]
+            else:
+                series = load_data_2col(train_files, data_dir=train_dir)  # [T, 2]
+                if series.shape[0] < total:
+                    raise ValueError(f"Training data too short ({series.shape[0]}) for total window size {total}.")
+                win = np.lib.stride_tricks.sliding_window_view(series, (total, series.shape[1]))  # [N,1,total,2]
+                win = win.reshape(-1, total, series.shape[1])                                     # [N,total,2]
+                X_np = win[:, :sequence_length, :].copy()                                         # [N,seq,2]
+                y_np = win[:, sequence_length:, 0].copy()                                         # [N,out] future z only
 
             X_train = torch.from_numpy(X_np)
             y_train = torch.from_numpy(y_np)
@@ -561,11 +603,13 @@ def main():
             steps_4s = 4 * 20
             steps_5s = 5 * 20
 
-            total_steps = len(test_data/10) - sequence_length - output_size - 1
+            # <<< NEW: robust length handling for 1D or 2D test arrays
+            T_test = test_data.shape[0] if isinstance(test_data, np.ndarray) else len(test_data)
+            total_steps = T_test - sequence_length - output_size - 1
             start_index = sequence_length
             end_index   = start_index + total_steps
-            if end_index + output_size > len(test_data):
-                end_index   = len(test_data) - output_size
+            if end_index + output_size > T_test:
+                end_index   = T_test - output_size
 
             h = model.init_hidden(1)  # batch size 1 for inference
 
@@ -577,26 +621,39 @@ def main():
             print(f"Testing {model_name}: generating video '{video_out_path}' ...", file=sys.__stdout__)
             with torch.no_grad(), writer.saving(fig, video_out_path, dpi=VIDEO_DPI):
                 for i in range(start_index, end_index):
-                    noisy_series = np.full(len(test_data), np.nan, dtype=np.float32)
+                    noisy_series = np.full(T_test, np.nan, dtype=np.float32)  # <<< NEW (uses T_test)
 
-                    # ---------- inside the testing loop, REPLACE your per-frame block with this ----------
-                    # one point per step (streaming) + test-time noise
-                    val = torch.tensor([[[test_data[i]]]], dtype=torch.float32, device=device)  # [1,1,1]
+                    # ---------- stateful, one point per step (+ test-time noise) ----------
+                    if input_size == 1:
+                        val_np = np.array([[[test_data[i]]]], dtype=np.float32)         # [1,1,1]
+                    else:
+                        val_np = np.array([[ test_data[i] ]], dtype=np.float32)          # [1,1,2] (z, vz)
+                    val = torch.from_numpy(val_np).to(device)
+
                     input_tensor_noisy = val + torch.randn_like(val) * noise_std
 
-                    # record the actual noisy value we fed (convert to cm for plotting)
-                    noisy_val_cm = float(input_tensor_noisy.squeeze().detach().cpu().numpy()) * meters_to_cm
+                    # record the actual noisy z we fed (convert to cm for plotting)
+                    if input_size == 1:
+                        noisy_val_z = float(input_tensor_noisy.squeeze().detach().cpu().numpy())
+                    else:
+                        noisy_val_z = float(input_tensor_noisy.squeeze().detach().cpu().numpy()[0])  # channel 0 = z
+                    noisy_val_cm = noisy_val_z * meters_to_cm
                     noisy_series[i] = noisy_val_cm
 
                     t0 = time.perf_counter()
-                    output, h = model(input_tensor_noisy, h)  # stateful inference: one datapoint per tick
-                    # detach hidden state (LSTM has detach_state; GRU uses list detach)
-                    h = model.detach_state(h) if hasattr(model, "detach_state") else [hh.detach() for hh in h]
+                    output, h = model(input_tensor_noisy, h)  # stateful inference
+                    h = [hh.detach() for hh in h]
                     t1 = time.perf_counter()
                     prediction_times.append(t1 - t0)
 
                     predicted = output.detach().cpu().numpy().flatten()
-                    true_future      = test_data[i + 1:i + 1 + output_size] * meters_to_cm
+
+                    # ground truth future z (column 0 if using vel)
+                    if input_size == 1:
+                        true_future      = test_data[i + 1:i + 1 + output_size] * meters_to_cm
+                    else:
+                        true_future      = test_data[i + 1:i + 1 + output_size, 0] * meters_to_cm
+
                     predicted_future = predicted * meters_to_cm
                     abs_error        = np.abs(true_future - predicted_future)
 
@@ -608,7 +665,12 @@ def main():
                     # ---- Build history window (exactly `sequence_length` points if available) ----
                     hist_start = max(0, i - sequence_length + 1)
                     hist_x = np.arange(hist_start, i + 1) / 20.0
-                    hist_clean_cm = test_data[hist_start : i + 1] * meters_to_cm
+
+                    if input_size == 1:
+                        hist_clean_cm = test_data[hist_start : i + 1] * meters_to_cm
+                    else:
+                        hist_clean_cm = test_data[hist_start : i + 1, 0] * meters_to_cm  # z only
+
                     hist_noisy_cm = noisy_series[hist_start : i + 1]  # contains NaNs for early steps
 
                     # ---- Future time axis ----
@@ -622,7 +684,6 @@ def main():
                     ax1.plot(hist_x, hist_clean_cm, 'k', linewidth=1.2, label=f'History clean ({len(hist_clean_cm)} steps)')
 
                     # history (noisy) — EXACT values fed to the model at each tick
-                    # we mask NaNs so the line starts when data is first available
                     mask = ~np.isnan(hist_noisy_cm)
                     if np.any(mask):
                         ax1.plot(hist_x[mask], hist_noisy_cm[mask], '--', linewidth=1.0, label='History noisy (fed)', alpha=0.9)
@@ -712,6 +773,12 @@ def _build_argparser():
         default="",
         help="Explicit checkpoint file (.pt or .pth) to resume from; overrides auto-detection."
     )
+    # <<< NEW: enable z+velocity inputs from train_data_normalised_with_vel/
+    parser.add_argument(
+        "--vel",
+        action="store_true",
+        help="Use z + velocity inputs from 'train_data_normalised_with_vel/'."
+    )
     return parser
 
 # Entry point
@@ -720,4 +787,5 @@ if __name__ == '__main__':
     # override globals before main() uses them
     RESUME = bool(args.resume)
     RESUME_PATH = args.resume_path or RESUME_PATH
+    USE_VEL = bool(args.vel)  # <<< NEW
     main()
