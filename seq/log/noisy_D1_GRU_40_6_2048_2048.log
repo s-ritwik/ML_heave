@@ -1,0 +1,11 @@
+================================================================================
+[2025-10-17 00:18:28] Starting model: noisy_D1_GRU_40_6_2048_2048
+Config: {"hidden_sizes": [2048, 2048], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30, "learning_rate": 0.001, "batch_size": 280, "epochs": 400}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 38,025,336
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+================================================================================
+[2025-10-17 00:18:29] RESUME=True | No checkpoint found for 'noisy_D1_GRU_40_6_2048_2048'. Starting fresh.
+[2025-10-17 04:31:11] epoch=20 | avg_loss=0.019064 | elapsed_s=15161.65 | lr=8.179069e-04 | ckpt_full='noisyGRU_models_seq/noisy_D1_GRU_40_6_2048_2048/epoch_20.pt' | ckpt_weights='noisyGRU_models_seq/noisy_D1_GRU_40_6_2048_2048/epoch_20.pth'
+[2025-10-17 05:22:05] Non-finite loss detected; skipping batch. loss_first=nan loss_rem=nan cont=nan

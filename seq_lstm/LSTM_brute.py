@@ -54,7 +54,7 @@ os.makedirs(PLOT_DIR, exist_ok=True)
 os.makedirs(LOG_DIR, exist_ok=True)
 
 # GPU selection (0 or 1)
-GPU_INDEX = 1
+GPU_INDEX = 0
 os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
 
 # Device

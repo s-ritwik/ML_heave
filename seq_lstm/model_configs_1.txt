@@ -1,1 +1,4 @@
-hidden_sizes: [4098,2048]; sequence_length:800; output_size: 120; x_seconds: 4; w: 10; learning_rate: 1.553606e-05; batch_size: 90; epochs: 400
+hidden_sizes: [4098,2048]; sequence_length:800; output_size: 120; x_seconds: 4; w: 10; learning_rate: 1.553606e-05; batch_size: 140; epochs: 400
+hidden_sizes: [1024,512,512]; sequence_length:800; output_size: 120; x_seconds: 4; w: 10; learning_rate: 0.001; batch_size: 480; epochs: 400
+hidden_sizes: [1024,1024,1024]; sequence_length:800; output_size: 120; x_seconds: 4; w: 10; learning_rate: 0.001; batch_size: 330; epochs: 400
+hidden_sizes: [512,512,512]; sequence_length:800; output_size: 120; x_seconds: 4; w: 10; learning_rate: 0.001; batch_size: 700; epochs: 400

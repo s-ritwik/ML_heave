@@ -58,3 +58,12 @@ Average Absolute Error (4s): 4.898945 cm
 Average Absolute Error (5s): 5.037085 cm
 --------------------------------------------------------------------------------
 
+================================================================================
+[2025-10-16 02:32:59] Starting model: noisy_D1_LSTM_40_6_1024_1024_1024
+Config: {"hidden_sizes": [1024, 1024, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 0.001, "batch_size": 400, "epochs": 400}
+Device: cuda | GPU_INDEX=1
+Trainable parameters: 21,123,192
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 10 epochs
+================================================================================
+[2025-10-16 02:33:01] RESUME=True | Resuming from 'noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_1024_1024/epoch_400.pth' (kind=pth, parsed_epoch=400) → start_epoch=401

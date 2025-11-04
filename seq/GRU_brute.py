@@ -62,7 +62,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Global data/config files
-CONFIG_FILE_PATH = 'model_configs_seq.txt'
+#CONFIG_FILE_PATH = 'model_configs_seq2.txt'
+CONFIG_FILE_PATH = 'model_configs_seq2.txt'
 MODEL_SUMMARY_PATH = 'model_summary.txt'
 
 # Training data locations (kept consistent; original code mixed two dirs)
