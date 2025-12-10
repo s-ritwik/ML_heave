@@ -18,3 +18,4 @@ noisyprediction_videos/*
 run*.log
 run*.txt
 *model*.txt
+*.csv
