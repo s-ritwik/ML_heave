@@ -103,7 +103,9 @@ MCA_CACHE = None
 # Saving / logging cadence
 SAVE_EVERY = 20                 # epochs
 LOG_EVERY  = 20                 # epochs (same as SAVE_EVERY per request)
-FIRST_POINT_CONT_WEIGHT = 50.0  # strong continuity weight between last input and first prediction
+CONTINUITY_WEIGHT = 10.0         # smoothness weight between adjacent outputs (all horizons)
+DERIV_WEIGHT_FIRST = 40.0        # weight for matching first-derivative over first x_seconds
+CURV_WEIGHT_FIRST  = 1.0        # weight for second-derivative smoothness over first x_seconds
 
 # Video writer settings
 VIDEO_FPS = 20
@@ -178,6 +180,17 @@ def _mca_predict_block(W, X1, mu_full, n, m, centered):
         X1c = X1 - mu1
         return (W @ X1c.T).T + mu2
     return (W @ X1.T).T
+
+def _enforce_first_point(outputs, last_inputs):
+    """
+    Hard constraint: set first predicted point to the last input reading.
+    outputs: tensor [B, m]
+    last_inputs: tensor [B] (last value of input sequence)
+    Returns a new tensor with outputs[:,0] overwritten.
+    """
+    out = outputs.clone()
+    out[:, 0] = last_inputs
+    return out
 
 def compute_mca_predictor(windows, n, m, center=True, energy_cutoff=0.01, P=None, ridge=1e-6):
     """
@@ -590,6 +603,10 @@ def main():
                     outputs, h = model(inputs, h)
                     h = [h_i.detach() for h_i in h]
 
+                    # Enforce hard continuity on first point
+                    last_input_point = inputs[:, -1, 0]
+                    outputs = _enforce_first_point(outputs, last_input_point)
+
                     # Weighted loss for first x_seconds and remaining
                     first_x_steps   = targets[:, :x_time_steps]
                     remaining_steps = targets[:, x_time_steps:]
@@ -599,17 +616,36 @@ def main():
 
                     # Smoothness/continuity loss on output sequence
                     continuity_loss = torch.mean((outputs[:, 1:] - outputs[:, :-1]) ** 2)
-                    # Strong anchor continuity: first predicted point should match last input reading
-                    anchor_loss = criterion(outputs[:, 0], inputs[:, -1, 0]) * FIRST_POINT_CONT_WEIGHT
 
-                    loss = loss_first_x + loss_remaining + 0.2 * continuity_loss + anchor_loss
+                    # Strong smoothness/derivative matching on first x_seconds
+                    first_seg = min(x_time_steps, output_size)
+                    if first_seg >= 2:
+                        pred_diff  = outputs[:, 1:first_seg] - outputs[:, :first_seg-1]
+                        true_diff  = targets[:, 1:first_seg] - targets[:, :first_seg-1]
+                        deriv_loss_first = criterion(pred_diff, true_diff)
+                    else:
+                        deriv_loss_first = 0.0
+                    if first_seg >= 3:
+                        curvature = outputs[:, 2:first_seg] - 2*outputs[:, 1:first_seg-1] + outputs[:, :first_seg-2]
+                        curvature_loss_first = torch.mean(curvature ** 2)
+                    else:
+                        curvature_loss_first = 0.0
+
+                    loss = (
+                        loss_first_x
+                        + loss_remaining
+                        + CONTINUITY_WEIGHT * continuity_loss
+                        + DERIV_WEIGHT_FIRST * deriv_loss_first
+                        + CURV_WEIGHT_FIRST  * curvature_loss_first
+                    )
                     if not torch.isfinite(loss):
                         with open(model_log_path, 'a') as mlog:
                             mlog.write(f"[{now_str()}] Non-finite loss detected; skipping batch. "
                                        f"loss_first={float(loss_first_x)} "
                                        f"loss_rem={float(loss_remaining) if isinstance(loss_remaining, torch.Tensor) else loss_remaining} "
                                        f"cont={float(continuity_loss)} "
-                                       f"anchor={float(anchor_loss)}\n")
+                                       f"deriv_first={float(deriv_loss_first) if isinstance(deriv_loss_first, torch.Tensor) else deriv_loss_first} "
+                                       f"curv_first={float(curvature_loss_first) if isinstance(curvature_loss_first, torch.Tensor) else curvature_loss_first}\n")
                         optimizer.zero_grad(set_to_none=True)
                         continue
                     loss.backward()
@@ -713,6 +749,8 @@ def main():
                     prediction_times.append(t1 - t0)
 
                     predicted = output.detach().cpu().numpy().flatten()
+                    # Enforce hard continuity at inference: first prediction equals last clean reading
+                    predicted[0] = float(test_data[i])
                     true_future      = test_data[i + 1:i + 1 + output_size] * meters_to_cm
                     # ---------------- MCA baseline at inference (added) ----------------
                     if USE_MCA:
@@ -743,6 +781,8 @@ def main():
                             predicted_future = predicted * meters_to_cm
                     else:
                         predicted_future = predicted * meters_to_cm
+                    # Re-enforce first-point continuity after any MCA blending
+                    predicted_future[0] = float(test_data[i] * meters_to_cm)
                     abs_error        = np.abs(true_future - predicted_future)
 
                     absolute_errors.append(abs_error.mean())
