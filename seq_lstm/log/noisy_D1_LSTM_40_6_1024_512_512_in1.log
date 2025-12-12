@@ -1,0 +1,61 @@
+================================================================================
+[2025-11-09 13:56:27] Starting model: noisy_D1_LSTM_40_6_1024_512_512_in1
+Config: {"hidden_sizes": [1024, 512, 512], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 10, "learning_rate": 0.001, "batch_size": 480, "epochs": 400}
+Device: cuda | GPU_INDEX=0
+Trainable parameters: 9,519,224
+noise_std=0.05, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 10 epochs
+Input size: 1 (z)
+================================================================================
+[2025-11-09 13:56:28] RESUME=True | No checkpoint found for 'noisy_D1_LSTM_40_6_1024_512_512_in1'. Starting fresh.
+[2025-11-09 14:31:44] epoch=10 | avg_loss=0.139300 | elapsed_s=2116.31 | lr=9.043821e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_10.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_10.pth'
+[2025-11-09 15:07:08] epoch=20 | avg_loss=0.114435 | elapsed_s=4239.64 | lr=8.179069e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_20.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_20.pth'
+[2025-11-09 15:42:25] epoch=30 | avg_loss=0.078945 | elapsed_s=6357.32 | lr=7.397004e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_30.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_30.pth'
+[2025-11-09 16:17:43] epoch=40 | avg_loss=0.034116 | elapsed_s=8475.39 | lr=6.689718e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_40.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_40.pth'
+[2025-11-09 16:53:01] epoch=50 | avg_loss=0.013765 | elapsed_s=10593.60 | lr=6.050061e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_50.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_50.pth'
+[2025-11-09 17:29:11] epoch=60 | avg_loss=0.007405 | elapsed_s=12763.50 | lr=5.471566e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_60.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_60.pth'
+[2025-11-09 18:12:03] epoch=70 | avg_loss=0.004537 | elapsed_s=15335.38 | lr=4.948387e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_70.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_70.pth'
+[2025-11-09 19:06:12] epoch=80 | avg_loss=0.003233 | elapsed_s=18583.65 | lr=4.475232e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_80.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_80.pth'
+[2025-11-09 19:41:32] epoch=90 | avg_loss=0.002166 | elapsed_s=20704.03 | lr=4.047320e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_90.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_90.pth'
+[2025-11-09 20:16:49] epoch=100 | avg_loss=0.002002 | elapsed_s=22821.30 | lr=3.660323e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_100.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_100.pth'
+[2025-11-09 20:57:18] epoch=110 | avg_loss=0.001603 | elapsed_s=25249.67 | lr=3.310331e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_110.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_110.pth'
+[2025-11-09 21:33:18] epoch=120 | avg_loss=0.001321 | elapsed_s=27408.71 | lr=2.993804e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_120.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_120.pth'
+[2025-11-09 22:08:37] epoch=130 | avg_loss=0.001196 | elapsed_s=29529.05 | lr=2.707543e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_130.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_130.pth'
+[2025-11-09 22:44:00] epoch=140 | avg_loss=0.001027 | elapsed_s=31652.39 | lr=2.448653e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_140.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_140.pth'
+[2025-11-09 23:19:26] epoch=150 | avg_loss=0.000905 | elapsed_s=33778.09 | lr=2.214518e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_150.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_150.pth'
+[2025-11-09 23:54:46] epoch=160 | avg_loss=0.000823 | elapsed_s=35898.35 | lr=2.002770e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_160.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_160.pth'
+[2025-11-10 00:30:08] epoch=170 | avg_loss=0.000702 | elapsed_s=38020.27 | lr=1.811270e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_170.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_170.pth'
+[2025-11-10 01:05:29] epoch=180 | avg_loss=0.000660 | elapsed_s=40141.53 | lr=1.638080e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_180.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_180.pth'
+[2025-11-10 01:40:50] epoch=190 | avg_loss=0.001334 | elapsed_s=42261.93 | lr=1.481450e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_190.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_190.pth'
+[2025-11-10 02:16:11] epoch=200 | avg_loss=0.000555 | elapsed_s=44382.77 | lr=1.339797e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_200.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_200.pth'
+[2025-11-10 02:51:36] epoch=210 | avg_loss=0.000520 | elapsed_s=46507.65 | lr=1.211688e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_210.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_210.pth'
+[2025-11-10 03:27:02] epoch=220 | avg_loss=0.000468 | elapsed_s=48634.08 | lr=1.095829e-04 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_220.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_220.pth'
+[2025-11-10 04:02:22] epoch=230 | avg_loss=0.000446 | elapsed_s=50753.91 | lr=9.910482e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_230.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_230.pth'
+[2025-11-10 04:37:42] epoch=240 | avg_loss=0.000413 | elapsed_s=52874.54 | lr=8.962862e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_240.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_240.pth'
+[2025-11-10 05:13:03] epoch=250 | avg_loss=0.000403 | elapsed_s=54995.37 | lr=8.105852e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_250.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_250.pth'
+[2025-11-10 05:48:24] epoch=260 | avg_loss=0.000374 | elapsed_s=57115.74 | lr=7.330787e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_260.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_260.pth'
+[2025-11-10 06:23:44] epoch=270 | avg_loss=0.000362 | elapsed_s=59235.64 | lr=6.629832e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_270.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_270.pth'
+[2025-11-10 06:59:09] epoch=280 | avg_loss=0.000348 | elapsed_s=61361.24 | lr=5.995901e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_280.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_280.pth'
+[2025-11-10 07:34:35] epoch=290 | avg_loss=0.000328 | elapsed_s=63487.29 | lr=5.422586e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_290.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_290.pth'
+[2025-11-10 08:09:55] epoch=300 | avg_loss=0.000323 | elapsed_s=65606.78 | lr=4.904089e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_300.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_300.pth'
+[2025-11-10 08:45:13] epoch=310 | avg_loss=0.000306 | elapsed_s=67725.53 | lr=4.435171e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_310.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_310.pth'
+[2025-11-10 09:20:33] epoch=320 | avg_loss=0.000295 | elapsed_s=69844.74 | lr=4.011089e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_320.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_320.pth'
+[2025-11-10 09:55:51] epoch=330 | avg_loss=0.000290 | elapsed_s=71963.47 | lr=3.627557e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_330.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_330.pth'
+[2025-11-10 10:31:11] epoch=340 | avg_loss=0.000280 | elapsed_s=74082.79 | lr=3.280697e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_340.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_340.pth'
+[2025-11-10 11:06:35] epoch=350 | avg_loss=0.000274 | elapsed_s=76207.51 | lr=2.967004e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_350.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_350.pth'
+[2025-11-10 11:41:59] epoch=360 | avg_loss=0.000267 | elapsed_s=78331.59 | lr=2.683305e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_360.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_360.pth'
+[2025-11-10 12:18:42] epoch=370 | avg_loss=0.000262 | elapsed_s=80533.65 | lr=2.426733e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_370.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_370.pth'
+[2025-11-10 12:57:57] epoch=380 | avg_loss=0.000259 | elapsed_s=82889.48 | lr=2.194694e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_380.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_380.pth'
+[2025-11-10 13:34:37] epoch=390 | avg_loss=0.000253 | elapsed_s=85089.02 | lr=1.984842e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_390.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_390.pth'
+[2025-11-10 14:13:58] epoch=400 | avg_loss=0.000249 | elapsed_s=87450.46 | lr=1.795055e-05 | ckpt_full='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_400.pt' | ckpt_weights='noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_400.pth'
+--------------------------------------------------------------------------------
+[2025-11-10 15:04:04] Training finished in 87450.58 s
+Final checkpoint used: noisyLSTM_models_seq/noisy_D1_LSTM_40_6_1024_512_512_in1/epoch_400.pth
+Test video saved: noisyprediction_videos/noisy_D1_LSTM_40_6_1024_512_512_in1.mp4
+Average Prediction Time: 0.000705 s
+Average Absolute Error (Total): 4.888188 cm
+Average Absolute Error (3s): 4.176511 cm
+Average Absolute Error (4s): 4.399819 cm
+Average Absolute Error (5s): 4.667117 cm
+--------------------------------------------------------------------------------
+

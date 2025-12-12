@@ -70,8 +70,8 @@ class Logger:
         self.logfile.flush()
 
 # GPU selection (0 or 1)
-GPU_INDEX = 0
-os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
+# GPU_INDEX = 0
+# os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
 
 # Device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -855,6 +855,7 @@ def _build_argparser():
     parser.add_argument('--mca-energy-cutoff', type=float, default=0.01, help='Minor-subspace energy fraction.')
     parser.add_argument('--mca-P', type=int, default=None, help='Use exactly P minor components.')
     parser.add_argument('--mca-ridge', type=float, default=1e-6, help='Ridge for (B2^T B2 + λI).')
+    parser.add_argument('--GPU-index', type=int, default=0, help='GPU index to use (default: 0).')
     return parser
 
 # Entry point
@@ -863,6 +864,10 @@ if __name__ == '__main__':
     # override globals before main() uses them
     RESUME = bool(args.resume)
     RESUME_PATH = args.resume_path or RESUME_PATH
+    GPU_INDEX = args.GPU_index or GPU_INDEX
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
+    print(f"Using GPU_INDEX={GPU_INDEX}", file=sys.__stdout__)
+    device = torch.device(f'cuda:{GPU_INDEX}' if torch.cuda.is_available() else 'cpu')
     USE_MCA = bool(args.use_mca)
     MCA_N = args.mca_n or MCA_N
     MCA_M = args.mca_m or MCA_M
