@@ -103,7 +103,9 @@ MCA_CACHE = None
 # Saving / logging cadence
 SAVE_EVERY = 20                 # epochs
 LOG_EVERY  = 20                 # epochs (same as SAVE_EVERY per request)
-CONTINUITY_WEIGHT = 1.0         # smoothness weight between adjacent outputs (can increase for stronger smoothing)
+CONTINUITY_WEIGHT = 10.0         # smoothness weight between adjacent outputs (all horizons)
+DERIV_WEIGHT_FIRST = 40.0        # weight for matching first-derivative over first x_seconds
+CURV_WEIGHT_FIRST  = 1.0        # weight for second-derivative smoothness over first x_seconds
 
 # Video writer settings
 VIDEO_FPS = 20
@@ -615,13 +617,35 @@ def main():
                     # Smoothness/continuity loss on output sequence
                     continuity_loss = torch.mean((outputs[:, 1:] - outputs[:, :-1]) ** 2)
 
-                    loss = loss_first_x + loss_remaining + CONTINUITY_WEIGHT * continuity_loss
+                    # Strong smoothness/derivative matching on first x_seconds
+                    first_seg = min(x_time_steps, output_size)
+                    if first_seg >= 2:
+                        pred_diff  = outputs[:, 1:first_seg] - outputs[:, :first_seg-1]
+                        true_diff  = targets[:, 1:first_seg] - targets[:, :first_seg-1]
+                        deriv_loss_first = criterion(pred_diff, true_diff)
+                    else:
+                        deriv_loss_first = 0.0
+                    if first_seg >= 3:
+                        curvature = outputs[:, 2:first_seg] - 2*outputs[:, 1:first_seg-1] + outputs[:, :first_seg-2]
+                        curvature_loss_first = torch.mean(curvature ** 2)
+                    else:
+                        curvature_loss_first = 0.0
+
+                    loss = (
+                        loss_first_x
+                        + loss_remaining
+                        + CONTINUITY_WEIGHT * continuity_loss
+                        + DERIV_WEIGHT_FIRST * deriv_loss_first
+                        + CURV_WEIGHT_FIRST  * curvature_loss_first
+                    )
                     if not torch.isfinite(loss):
                         with open(model_log_path, 'a') as mlog:
                             mlog.write(f"[{now_str()}] Non-finite loss detected; skipping batch. "
                                        f"loss_first={float(loss_first_x)} "
                                        f"loss_rem={float(loss_remaining) if isinstance(loss_remaining, torch.Tensor) else loss_remaining} "
-                                       f"cont={float(continuity_loss)}\n")
+                                       f"cont={float(continuity_loss)} "
+                                       f"deriv_first={float(deriv_loss_first) if isinstance(deriv_loss_first, torch.Tensor) else deriv_loss_first} "
+                                       f"curv_first={float(curvature_loss_first) if isinstance(curvature_loss_first, torch.Tensor) else curvature_loss_first}\n")
                         optimizer.zero_grad(set_to_none=True)
                         continue
                     loss.backward()
