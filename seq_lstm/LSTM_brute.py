@@ -75,7 +75,7 @@ TRAIN_DIR_WITH_VEL = 'train_data_normalised_with_vel'
 TEST_FILE_PATH = os.path.join(TRAIN_MOCAP_DIR, 'D1H3_normalised.csv')
 
 # Noise and scaling constants
-NOISE_STD_DEFAULT = 0.05        # Gaussian noise std on inputs
+NOISE_STD_DEFAULT = 0.01        # Gaussian noise std on inputs
 METERS_TO_CM      = 25          # project-specific conversion factor
 
 # Saving / logging cadence
@@ -250,7 +250,7 @@ def get_scheduler(optimizer, config):
     """Return a configured LR scheduler. Defaults to exponential decay."""
     sched_type = config.get("lr_scheduler", "exponential")
     if sched_type == "exponential":
-        decay = config.get("decay", 0.99)
+        decay = config.get("decay", 0.998)
         return LambdaLR(optimizer, lr_lambda=lambda e: decay ** e)
     elif sched_type == "step":
         step_size = config.get("step_size", 50)
