@@ -12,6 +12,8 @@ noisyprediction_videos/*
 *.npy
 *.npz
 *.json
+!seq/
+!seq/noisyGRU_models_seq/
 !seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024/epoch_500.pth
 !seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_ritwik_trained_backup/epoch_500.pth
 *.log
