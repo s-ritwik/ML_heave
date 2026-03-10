@@ -71,12 +71,12 @@ class GRUPredictionPublisher(Node):
                                           'noisy_D1_GRU_40_6_1024_1024_ritwik_trained_backup')
 
         self.declare_parameter('model_path', default_model_path)
-        self.declare_parameter('uav_pose_topic', '/mavros/local_position/pose')
-        self.declare_parameter('platform_pose_topic', '/stewart/top_platform_pose')
+        self.declare_parameter('uav_pose_topic', '/mavros/vision_pose/pose')
+        self.declare_parameter('platform_pose_topic', '/qualisys/ship_deck_platform/pose')
         self.declare_parameter('prediction_topic', '/stewart/prediction')
         self.declare_parameter('hz', 20.0)
-        self.declare_parameter('z_bias', 2.8479)
-        self.declare_parameter('scale_factor', 0.4)
+        self.declare_parameter('z_bias', 2.03) # 2.8479 for gazebo, 2.03 for exp
+        self.declare_parameter('scale_factor', 0.35)
         self.declare_parameter('epoch', 480)
 
         self.model_path = self.get_parameter('model_path').value
