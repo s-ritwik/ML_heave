@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import time
 import re
@@ -10,13 +12,15 @@ from sklearn.preprocessing import MinMaxScaler
 from matplotlib.animation import FFMpegWriter  # Import FFMpegWriter
 
 # ------------------------------ INPUTS ------------------------------------
-test_time  = 150                                         # seconds to simulate
-model_path = 'seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024/epoch_500.pth'
+test_time  = 600                                         # seconds to simulate
+model_path = '/home/rycker/projects/ML_heave/seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_in1/epoch_3000.pth'
 test_file_path = 'seq/train_data_normalised/D1H3_normalised.csv'  # input CSV
+noise_std  = 0.00   # Gaussian noise sigma to add to input at test-time
+sampling_rate = 20  # Hz
 
-noise_std  = 0.05   # Gaussian noise sigma to add to input at test-time
-sampling_rate = 10  # Hz
-
+t_start= time.time()
+mean_position = 0
+scaling_factor = 1
 # ----------------------------- HELPERS ------------------------------------
 def parse_model_path(model_path):
     """Parse sequence length, output size and hidden_sizes from a path that contains '_GRU_<seq>_<out>_<hs...>'."""
@@ -78,8 +82,8 @@ model.eval()
 
 # Load test data (first column)
 test_data = pd.read_csv(test_file_path, header=None).iloc[:, 0].values.astype(np.float32)
-
-meters_to_cm = 25.0  # conversion factor used in your pipeline
+test_data = (test_data - mean_position) / scaling_factor  # center & scale
+meters_to_cm = 32.0  # conversion factor used in your pipeline
 
 # ---------------------------- RANGES --------------------------------------
 total_steps = int(test_time * sampling_rate)
@@ -92,8 +96,6 @@ if end_index + output_size > len(test_data):
 print(f"Testing for {total_steps / sampling_rate:.2f} seconds.")
 print(f"start_index: {start_index} | end_index: {end_index} | len(test_data): {len(test_data)}")
 
-desired_interval = 1.0 / sampling_rate
-
 # Errors & timing
 prediction_times = []
 absolute_errors  = []
@@ -102,14 +104,39 @@ steps_3s, steps_4s, steps_5s = 3*sampling_rate, 4*sampling_rate, 5*sampling_rate
 
 # Hidden states
 h = [torch.zeros(1, 1, hs, device=device) for hs in hidden_sizes]
-# -------------------------- VIDEO WRITER ----------------------------------
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
 
 # Relative-time axes (fixed window): history (-Tin..0), future (0..Tout)
 Tin_s  = sequence_length / sampling_rate
 Tout_s = output_size     / sampling_rate
-t_hist   = np.arange(-sequence_length, 0, 1, dtype=float) / sampling_rate            # [-Tin, ..., -1/sr]
 t_future = np.arange(1, output_size + 1, 1, dtype=float) / sampling_rate             # [1/sr, ..., Tout]
+
+# -------------------------- VIDEO WRITER ----------------------------------
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
+title = fig.suptitle("", fontsize=12)
+
+# Reuse artists across frames instead of clearing and redrawing each time.
+hist_line, = ax1.plot([], [], label='Noisy Input (cm)')
+true_line, = ax1.plot(t_future, np.full_like(t_future, np.nan), 'g--', label='True future (cm)')
+pred_line, = ax1.plot(t_future, np.full_like(t_future, np.nan), 'r', label='Predicted (cm)')
+ax1.axvline(0.0, linestyle=':', linewidth=1)
+ax1.set_xlim(-Tin_s, Tout_s)
+ax1.set_xlabel('Time (s)')
+ax1.set_ylabel('Position (cm)')
+ax1.margins(y=0.1)
+ax1.legend(loc='upper left')
+timing_text = ax1.text(
+    0.99, 0.02, "",
+    transform=ax1.transAxes, ha='right', va='bottom',
+    fontsize=10, bbox=dict(facecolor='white', alpha=0.5, boxstyle='round,pad=0.3')
+)
+
+err_line, = ax2.plot(t_future, np.full_like(t_future, np.nan), 'b', label='Absolute error (cm)')
+ax2.axvline(0.0, linestyle=':', linewidth=1)
+ax2.set_xlim(0.0, Tout_s)
+ax2.set_xlabel('Time (s)')
+ax2.set_ylabel('Error (cm)')
+ax2.margins(y=0.1)
+ax2.legend(loc='upper left')
 
 out_mp4 = build_output_path(model_path, sequence_length, output_size, hidden_sizes, noise_std, test_time)
 metadata = dict(title='GRU forecast', artist='Matplotlib', comment='noisy test-time predictions')
@@ -120,11 +147,9 @@ testing_start_time = time.time()
 error_start_index  = start_index + sequence_length
 noisy_history = []  
 
-with writer.saving(fig, out_mp4, dpi=300):
+with writer.saving(fig, out_mp4, dpi=100):
     with torch.no_grad():
         for i in range(start_index, end_index):
-            iter_start = time.time()
-
              # ----- noisy input (test-time) -----
             clean_val = torch.tensor([[[test_data[i]]]], dtype=torch.float32, device=device)
             noisy_val = clean_val + torch.randn_like(clean_val) * noise_std
@@ -153,57 +178,32 @@ with writer.saving(fig, out_mp4, dpi=300):
                 errors_5s.append(np.mean(abs_error[:5*sampling_rate]))
 
             # ------------- PLOT (time-based, sliding window) -------------
-            ax1.clear(); ax2.clear()
-
-            # plot noisy history (what the model actually saw)
             hist_cm = np.array(noisy_history) * meters_to_cm
-            t_hist  = np.arange(-len(hist_cm), 0) / sampling_rate
-            ax1.plot(t_hist, hist_cm, label='Noisy Input (cm)')
+            t_hist_frame  = np.arange(-len(hist_cm), 0, dtype=float) / sampling_rate
+            hist_line.set_data(t_hist_frame, hist_cm)
+            true_line.set_data(t_future, true_future_cm)
+            pred_line.set_data(t_future, predicted_future_cm)
+            ax1.relim()
+            ax1.autoscale_view(scalex=False, scaley=True)
 
-            # future (clean true vs pred)
-            t_future = np.arange(1, output_size+1) / sampling_rate
-            ax1.plot(t_future, true_future_cm, 'g--', label='True future (cm)')
-            ax1.plot(t_future, predicted_future_cm, 'r', label='Predicted (cm)')
-            ax1.axvline(0.0, linestyle=':', linewidth=1)
-
-            Tin_s  = sequence_length / sampling_rate
-            Tout_s = output_size     / sampling_rate
-            ax1.set_xlim(-Tin_s, Tout_s)
-            ax1.set_xlabel('Time (s)')
-            ax1.set_ylabel('Position (cm)')
-            ax1.legend(loc='upper left')
-
-             # overlay elapsed + timing
+            # overlay elapsed + timing
             total_elapsed = time.time() - testing_start_time
             avg_ms = (np.mean(prediction_times)*1000.0) if prediction_times else 0.0
             cur_ms = pred_time*1000.0
-            fig.suptitle(
+            title.set_text(
                 f"Elapsed: {total_elapsed:.2f}s / {test_time}s   |   "
                 f"Model: {os.path.basename(os.path.dirname(model_path))}/{os.path.basename(model_path)}",
-                fontsize=12
             )
-            ax1.text(
-                0.99, 0.02,
+            timing_text.set_text(
                 f"Pred time: {cur_ms:.2f} ms  (avg {avg_ms:.2f} ms)\nNoise σ={noise_std:.3f}",
-                transform=ax1.transAxes, ha='right', va='bottom',
-                fontsize=10, bbox=dict(facecolor='white', alpha=0.5, boxstyle='round,pad=0.3')
             )
 
             # error subplot
-            ax2.plot(t_future, abs_error, 'b', label='Absolute error (cm)')
-            ax2.axvline(0.0, linestyle=':', linewidth=1)
-            ax2.set_xlim(0.0, Tout_s)
-            ax2.set_xlabel('Time (s)')
-            ax2.set_ylabel('Error (cm)')
-            ax2.legend(loc='upper left')
+            err_line.set_data(t_future, abs_error)
+            ax2.relim()
+            ax2.autoscale_view(scalex=False, scaley=True)
 
             writer.grab_frame()
-
-            # pacing
-            elapsed = time.time() - iter_start
-            sleep_t = (1.0/sampling_rate) - elapsed
-            if sleep_t > 0:
-                time.sleep(sleep_t)
 
 plt.close(fig)
 
@@ -224,3 +224,6 @@ if absolute_errors:
 else:
     print("\nNo errors were recorded. Ensure test duration is sufficient and indices are in range.")
     print(f"Saved video: {out_mp4}")
+
+t_end = time.time()
+print(f"Total testing time: {t_end - t_start:.2f} seconds")

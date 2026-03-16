@@ -24,9 +24,9 @@ import re
 import sys
 import json
 import time
+import math
 import glob
 import argparse
-from contextlib import nullcontext
 import torch
 import numpy as np
 import pandas as pd
@@ -91,9 +91,6 @@ VIDEO_DPI = 100
 # --------------------- RESUME CONTROLS (overridden by CLI) ---------------------
 RESUME = False
 RESUME_PATH = ""   # e.g. "noisyGRU_models_seq/noisy_D1_GRU_20_8_512_256/epoch_100.pt"
-RUN_TEST = True
-SAVE_VIDEO = True
-NUM_WORKERS = None  # None => auto
 
 # <<< NEW (set by argparse at the bottom)
 USE_VEL = False
@@ -159,9 +156,6 @@ def write_global_hyperparams_log():
         "log_every_epochs": LOG_EVERY,
         "video_fps": VIDEO_FPS,
         "video_dpi": VIDEO_DPI,
-        "run_test": RUN_TEST,
-        "save_video": SAVE_VIDEO,
-        "num_workers": NUM_WORKERS,
         "model_root_dir": MODEL_ROOT_DIR,
         "plot_dir": PLOT_DIR,
         "config_file_path": CONFIG_FILE_PATH,
@@ -175,7 +169,7 @@ def write_global_hyperparams_log():
 def parse_config_line(config_line):
     """Parse a single model config line. Supports extras for LR scheduling.
        Example:
-       'sequence_length:400; output_size:160; hidden_sizes:[512,256]; x_seconds:3; w:2.0; jump_w:8.0; vel_w:3.0; acc_w:0.8; tail_obs:5; cont_warmup_epochs:80; batch_size:64; epochs:120; learning_rate:0.001; lr_scheduler:step; step_size:40; gamma:0.5'
+       'sequence_length:400; output_size:160; hidden_sizes:[512,256]; x_seconds:3; w:2.0; batch_size:64; epochs:120; learning_rate:0.001; lr_scheduler:step; step_size:40; gamma:0.5'
     """
     config = {}
     params = [p for p in config_line.split(';') if p.strip()]
@@ -248,6 +242,31 @@ def get_scheduler(optimizer, config):
         return CosineAnnealingLR(optimizer, T_max=T_max)
     else:
         raise ValueError(f"Unknown lr_scheduler: {sched_type}")
+
+def get_last_state_from_sequence(seq, input_size):
+    """
+    Extract last position and last velocity from a history sequence.
+    seq: [B, T, C], where C is 1 (z) or 2 ([z, vz]).
+    """
+    last_pos = seq[:, -1, 0]
+    if input_size == 1:
+        if seq.size(1) > 1:
+            last_vel = seq[:, -1, 0] - seq[:, -2, 0]
+        else:
+            last_vel = torch.zeros_like(last_pos)
+    else:
+        last_vel = seq[:, -1, 1]
+    return last_pos, last_vel
+
+def decode_positions_from_residual_velocity(res_vel, last_pos, last_vel):
+    """
+    Hard continuity decoder:
+    - Predict residual velocity around the latest observed velocity.
+    - Integrate from latest observed position.
+    """
+    pred_vel = res_vel + last_vel.unsqueeze(1)
+    pred_pos = last_pos.unsqueeze(1) + torch.cumsum(pred_vel, dim=1)
+    return pred_pos, pred_vel
 
 def latest_checkpoint_pt(model_folder):
     """Return the path to the latest epoch_*.pt checkpoint if present; else '' (legacy helper)."""
@@ -399,19 +418,13 @@ def main():
             hidden_sizes    = config['hidden_sizes']
             x_seconds       = config['x_seconds']
             w               = float(config.get('w', 1.0))
-            jump_w          = float(config.get('jump_w', 8.0))
-            vel_w           = float(config.get('vel_w', 3.0))
-            acc_w           = float(config.get('acc_w', 0.8))
-            tail_obs        = max(2, int(config.get('tail_obs', 5)))
-            cont_warmup_epochs = max(0, int(config.get('cont_warmup_epochs', 80)))
             batch_size      = config['batch_size']
             epochs          = config['epochs']
             learning_rate   = config['learning_rate']
             noise_std       = NOISE_STD_DEFAULT  # single global noise hyperparam for all models
-            loader_workers  = min(8, (os.cpu_count() or 1)) if NUM_WORKERS is None else max(0, int(NUM_WORKERS))
 
             # Build model name and per-model paths
-            model_name   = f"noisy_D1_GRU_{sequence_length//20}_{output_size//20}_{'_'.join(map(str, hidden_sizes))}_{in_tag}"  # <<< NEW (suffix)
+            model_name   = f"noisy_D1_GRU_{sequence_length//20}_{output_size//20}_{'_'.join(map(str, hidden_sizes))}_{in_tag}_velpredhard"
             print("Training for:", model_name, file=sys.__stdout__)
             print("Training for:", model_name)
 
@@ -437,12 +450,8 @@ def main():
                 mlog.write(f"noise_std={noise_std}, meters_to_cm={meters_to_cm}\n")
                 mlog.write(f"Checkpoints every {SAVE_EVERY} epochs | Logs every {LOG_EVERY} epochs\n")
                 mlog.write(f"Input size: {input_size} ({'z' if input_size==1 else 'z+vz'})\n")  # <<< NEW
-                mlog.write(f"run_test={RUN_TEST}, save_video={SAVE_VIDEO}, num_workers={loader_workers}\n")
-                mlog.write(
-                    f"Loss weights: w={w}, jump_w={jump_w}, vel_w={vel_w}, "
-                    f"acc_w={acc_w}, tail_obs={tail_obs}, "
-                    f"cont_warmup_epochs={cont_warmup_epochs}\n"
-                )
+                mlog.write("Decoder mode: residual velocity integration (hard continuity)\n")
+                mlog.write(f"Loss weights: w={w}\n")
                 mlog.write('='*80 + '\n')
                 mlog.flush()
 
@@ -470,24 +479,14 @@ def main():
 
             X_train = torch.from_numpy(X_np)
             y_train = torch.from_numpy(y_np)
-            clean_tail = X_train[:, -tail_obs:, :].contiguous()
 
             # Add Gaussian noise to X_train
             noise = torch.randn_like(X_train) * noise_std
             X_train_noisy = X_train + noise
 
             # Dataset/loader
-            train_dataset = TensorDataset(X_train_noisy, y_train, clean_tail)
-            loader_kwargs = {
-                "batch_size": batch_size,
-                "shuffle": True,
-                "pin_memory": (device.type == "cuda"),
-                "num_workers": loader_workers,
-            }
-            if loader_workers > 0:
-                loader_kwargs["persistent_workers"] = True
-                loader_kwargs["prefetch_factor"] = 2
-            train_loader = DataLoader(train_dataset, **loader_kwargs)
+            train_dataset = TensorDataset(X_train_noisy, y_train, X_train)
+            train_loader  = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
 
             # ------------------- RESUME (per-config) -------------------
             start_epoch = 1
@@ -535,23 +534,22 @@ def main():
             # -------------------------- Training loop -------------------------
             start_time = time.time()
             x_time_steps = min(x_seconds * 20, output_size)  # Steps for weighted loss partition
-            horizon_weights = torch.ones(output_size, dtype=torch.float32, device=device)
-            if x_time_steps > 0 and w != 1.0:
-                horizon_weights[:x_time_steps] = w
 
             for epoch in range(start_epoch, epochs + 1):
                 model.train()
                 total_loss = 0.0
 
-                for inputs, targets, clean_tail_batch in train_loader:
-                    inputs = inputs.to(device, non_blocking=True)
-                    targets = targets.to(device, non_blocking=True)
-                    clean_tail_batch = clean_tail_batch.to(device, non_blocking=True)
+                for inputs, targets, clean_inputs in train_loader:
+                    inputs, targets, clean_inputs = inputs.to(device), targets.to(device), clean_inputs.to(device)
                     h = model.init_hidden(inputs.size(0))
-                    optimizer.zero_grad(set_to_none=True)
+                    optimizer.zero_grad()
 
-                    outputs, h = model(inputs, h)
+                    res_vel, h = model(inputs, h)
                     h = [h_i.detach() for h_i in h]
+
+                    # Hard continuity by construction: decode positions from last observed state.
+                    last_pos, last_vel = get_last_state_from_sequence(clean_inputs, input_size)
+                    outputs, _ = decode_positions_from_residual_velocity(res_vel, last_pos, last_vel)
 
                     # Weighted loss for first x_seconds and remaining
                     first_x_steps   = targets[:, :x_time_steps]
@@ -559,47 +557,12 @@ def main():
 
                     loss_first_x    = criterion(outputs[:, :x_time_steps], first_x_steps) * w if x_time_steps > 0 else outputs.new_tensor(0.0)
                     loss_remaining  = criterion(outputs[:, x_time_steps:], remaining_steps) if remaining_steps.size(1) > 0 else outputs.new_tensor(0.0)
-                    loss_pos        = loss_first_x + loss_remaining
-
-                    # Soft-hard continuity constraints tied to observed tail.
-                    clean_hist_z = clean_tail_batch[..., 0]
-                    tail_len = min(tail_obs, clean_hist_z.size(1))
-                    obs_tail = clean_hist_z[:, -tail_len:]
-                    last_obs = obs_tail[:, -1]
-
-                    # Match first forecast jump to the true one-step jump.
-                    pred_jump0 = outputs[:, 0] - last_obs
-                    true_jump0 = targets[:, 0] - last_obs
-                    loss_jump = criterion(pred_jump0, true_jump0)
-
-                    # Match velocity and acceleration profiles from boundary onward.
-                    pred_seq = torch.cat([obs_tail, outputs], dim=1)
-                    true_seq = torch.cat([obs_tail, targets], dim=1)
-
-                    pred_vel = pred_seq[:, 1:] - pred_seq[:, :-1]
-                    true_vel = true_seq[:, 1:] - true_seq[:, :-1]
-                    pred_vel_fut = pred_vel[:, tail_len - 1:]  # [B, output_size]
-                    true_vel_fut = true_vel[:, tail_len - 1:]  # [B, output_size]
-                    loss_vel = (((pred_vel_fut - true_vel_fut) ** 2) * horizon_weights.unsqueeze(0)).mean()
-
-                    pred_acc = pred_vel[:, 1:] - pred_vel[:, :-1]
-                    true_acc = true_vel[:, 1:] - true_vel[:, :-1]
-                    pred_acc_fut = pred_acc[:, tail_len - 2:]  # [B, output_size]
-                    true_acc_fut = true_acc[:, tail_len - 2:]  # [B, output_size]
-                    loss_acc = (((pred_acc_fut - true_acc_fut) ** 2) * horizon_weights.unsqueeze(0)).mean()
-
-                    cont_scale = min(1.0, (epoch / float(cont_warmup_epochs))) if cont_warmup_epochs > 0 else 1.0
-                    loss_cont = jump_w * loss_jump + vel_w * loss_vel + acc_w * loss_acc
-                    loss = loss_pos + cont_scale * loss_cont
+                    loss = loss_first_x + loss_remaining
                     if not torch.isfinite(loss):
                         with open(model_log_path, 'a') as mlog:
                             mlog.write(f"[{now_str()}] Non-finite loss detected; skipping batch. "
                                        f"loss_first={float(loss_first_x)} "
-                                       f"loss_rem={float(loss_remaining)} "
-                                       f"jump={float(loss_jump)} "
-                                       f"vel={float(loss_vel)} "
-                                       f"acc={float(loss_acc)} "
-                                       f"cont_scale={float(cont_scale)}\n")
+                                       f"loss_rem={float(loss_remaining)}\n")
                         optimizer.zero_grad(set_to_none=True)
                         continue
                     loss.backward()
@@ -641,15 +604,6 @@ def main():
 
             training_time = time.time() - start_time
 
-            if not RUN_TEST:
-                with open(model_log_path, 'a') as mlog:
-                    mlog.write('-'*80 + '\n')
-                    mlog.write(f"[{now_str()}] Training finished in {training_time:.2f} s\n")
-                    mlog.write("Post-training test skipped (--skip-test).\n")
-                    mlog.write('-'*80 + '\n\n')
-                    mlog.flush()
-                continue
-
             # ---------------------------- Testing -----------------------------
             # Prefer the newest .pt/.pth in this model folder
             final_ckpt_path, final_kind, _ = find_latest_checkpoint_any(model_folder)
@@ -686,27 +640,22 @@ def main():
 
             h = model.init_hidden(1)  # batch size 1 for inference
 
-            video_out_path = os.path.join(PLOT_DIR, f"{model_name}.mp4")
-            noisy_series = np.full(T_test, np.nan, dtype=np.float32)
-            if SAVE_VIDEO:
-                fig = plt.figure(figsize=(12, 8))
-                writer = animation.FFMpegWriter(fps=VIDEO_FPS)
-                print(f"Testing {model_name}: generating video '{video_out_path}' ...", file=sys.__stdout__)
-                video_context = writer.saving(fig, video_out_path, dpi=VIDEO_DPI)
-            else:
-                fig = None
-                writer = None
-                print(f"Testing {model_name}: computing metrics only (video skipped) ...", file=sys.__stdout__)
-                video_context = nullcontext()
+            # Video writer
+            fig = plt.figure(figsize=(12, 8))
+            writer = animation.FFMpegWriter(fps=VIDEO_FPS)
 
-            with torch.no_grad(), video_context:
+            video_out_path = os.path.join(PLOT_DIR, f"{model_name}.mp4")
+            print(f"Testing {model_name}: generating video '{video_out_path}' ...", file=sys.__stdout__)
+            with torch.no_grad(), writer.saving(fig, video_out_path, dpi=VIDEO_DPI):
                 for i in range(start_index, end_index):
+                    noisy_series = np.full(T_test, np.nan, dtype=np.float32)  # <<< NEW (uses T_test)
+
                     # ---------- stateful, one point per step (+ test-time noise) ----------
                     if input_size == 1:
                         val_np = np.array([[[test_data[i]]]], dtype=np.float32)         # [1,1,1]
                     else:
                         val_np = np.array([[ test_data[i] ]], dtype=np.float32)          # [1,1,2] (z, vz)
-                    val = torch.from_numpy(val_np).to(device, non_blocking=True)
+                    val = torch.from_numpy(val_np).to(device)
 
                     input_tensor_noisy = val + torch.randn_like(val) * noise_std
 
@@ -719,11 +668,23 @@ def main():
                     noisy_series[i] = noisy_val_cm
 
                     t0 = time.perf_counter()
-                    output, h = model(input_tensor_noisy, h)  # stateful inference
+                    res_vel, h = model(input_tensor_noisy, h)  # stateful inference
                     h = [hh.detach() for hh in h]
                     t1 = time.perf_counter()
                     prediction_times.append(t1 - t0)
 
+                    if input_size == 1:
+                        last_pos = torch.tensor([float(test_data[i])], dtype=torch.float32, device=device)
+                        if i > 0:
+                            last_vel_val = float(test_data[i] - test_data[i - 1])
+                        else:
+                            last_vel_val = 0.0
+                        last_vel = torch.tensor([last_vel_val], dtype=torch.float32, device=device)
+                    else:
+                        last_pos = torch.tensor([float(test_data[i, 0])], dtype=torch.float32, device=device)
+                        last_vel = torch.tensor([float(test_data[i, 1])], dtype=torch.float32, device=device)
+
+                    output, _ = decode_positions_from_residual_velocity(res_vel, last_pos, last_vel)
                     predicted = output.detach().cpu().numpy().flatten()
 
                     # ground truth future z (column 0 if using vel)
@@ -754,52 +715,48 @@ def main():
                     # ---- Future time axis ----
                     fut_x = np.arange(i + 1, i + 1 + output_size) / 20.0
 
-                    if SAVE_VIDEO:
-                        # ---- Draw frame: show history (clean + noisy) and future (true + predicted) ----
-                        fig.clear()
-                        ax1 = fig.add_subplot(2, 1, 1)
+                    # ---- Draw frame: show history (clean + noisy) and future (true + predicted) ----
+                    fig.clear()
+                    ax1 = fig.add_subplot(2, 1, 1)
 
-                        # history (clean) — what the underlying signal actually was
-                        ax1.plot(hist_x, hist_clean_cm, 'k', linewidth=1.2, label=f'History clean ({len(hist_clean_cm)} steps)')
+                    # history (clean) — what the underlying signal actually was
+                    ax1.plot(hist_x, hist_clean_cm, 'k', linewidth=1.2, label=f'History clean ({len(hist_clean_cm)} steps)')
 
-                        # history (noisy) — EXACT values fed to the model at each tick
-                        mask = ~np.isnan(hist_noisy_cm)
-                        if np.any(mask):
-                            ax1.plot(hist_x[mask], hist_noisy_cm[mask], '--', linewidth=1.0, label='History noisy (fed)', alpha=0.9)
+                    # history (noisy) — EXACT values fed to the model at each tick
+                    mask = ~np.isnan(hist_noisy_cm)
+                    if np.any(mask):
+                        ax1.plot(hist_x[mask], hist_noisy_cm[mask], '--', linewidth=1.0, label='History noisy (fed)', alpha=0.9)
 
-                        # future (true vs predicted)
-                        ax1.plot(fut_x, true_future, 'g--', linewidth=1.2, label=f'True (+{output_size/20:.1f}s)')
-                        ax1.plot(fut_x, predicted_future, 'r', linewidth=1.2, label='Predicted')
+                    # future (true vs predicted)
+                    ax1.plot(fut_x, true_future, 'g--', linewidth=1.2, label=f'True (+{output_size/20:.1f}s)')
+                    ax1.plot(fut_x, predicted_future, 'r', linewidth=1.2, label='Predicted')
 
-                        # lock x-range to show exactly history+future
-                        xmin = (i - sequence_length + 1) / 20.0
-                        xmax = (i + output_size) / 20.0
-                        ax1.set_xlim(xmin, xmax)
-                        ax1.set_ylim(-30, 30)
-                        ax1.set_title(f"t = {i/20.0:.2f}s | Window: {sequence_length} hist + {output_size} fut")
-                        ax1.set_xlabel('Time (s)')
-                        ax1.set_ylabel('Position (cm)')
-                        ax1.legend(loc='upper left')
+                    # lock x-range to show exactly history+future
+                    xmin = (i - sequence_length + 1) / 20.0
+                    xmax = (i + output_size) / 20.0
+                    ax1.set_xlim(xmin, xmax)
+                    ax1.set_ylim(-30, 30)
+                    ax1.set_title(f"t = {i/20.0:.2f}s | Window: {sequence_length} hist + {output_size} fut")
+                    ax1.set_xlabel('Time (s)')
+                    ax1.set_ylabel('Position (cm)')
+                    ax1.legend(loc='upper left')
 
-                        # annotate per-tick prediction time
-                        if prediction_times:
-                            ax1.text(0.01, 0.95,
-                                    f"pred time: {prediction_times[-1]*1000:.2f} ms",
-                                    transform=ax1.transAxes, va='top', ha='left')
+                    # annotate per-tick prediction time
+                    if prediction_times:
+                        ax1.text(0.01, 0.95,
+                                f"pred time: {prediction_times[-1]*1000:.2f} ms",
+                                transform=ax1.transAxes, va='top', ha='left')
 
-                        # error subplot
-                        ax2 = fig.add_subplot(2, 1, 2)
-                        ax2.plot(fut_x, abs_error, 'b', linewidth=1.2, label='Absolute Error (cm)')
-                        ax2.set_xlim(xmin, xmax)
-                        ax2.set_ylim(0, 15)
-                        ax2.set_xlabel('Time (s)')
-                        ax2.set_ylabel('Error (cm)')
-                        ax2.legend(loc='upper left')
+                    # error subplot
+                    ax2 = fig.add_subplot(2, 1, 2)
+                    ax2.plot(fut_x, abs_error, 'b', linewidth=1.2, label='Absolute Error (cm)')
+                    ax2.set_xlim(xmin, xmax)
+                    ax2.set_ylim(0, 15)
+                    ax2.set_xlabel('Time (s)')
+                    ax2.set_ylabel('Error (cm)')
+                    ax2.legend(loc='upper left')
 
-                        writer.grab_frame()
-
-            if fig is not None:
-                plt.close(fig)
+                    writer.grab_frame()
 
             # -------------------------- Metrics & Logs ------------------------
             avg_prediction_time = float(np.mean(prediction_times)) if prediction_times else 0.0
@@ -825,10 +782,7 @@ def main():
                 mlog.write('-'*80 + '\n')
                 mlog.write(f"[{now_str()}] Training finished in {training_time:.2f} s\n")
                 mlog.write(f"Final checkpoint used: {final_ckpt_display}\n")
-                if SAVE_VIDEO:
-                    mlog.write(f"Test video saved: {video_out_path}\n")
-                else:
-                    mlog.write("Test video skipped (--skip-video).\n")
+                mlog.write(f"Test video saved: {video_out_path}\n")
                 mlog.write(f"Average Prediction Time: {avg_prediction_time:.6f} s\n")
                 mlog.write(f"Average Absolute Error (Total): {avg_error:.6f} cm\n")
                 mlog.write(f"Average Absolute Error (3s): {avg_error_3s:.6f} cm\n")
@@ -864,22 +818,6 @@ def _build_argparser():
         action="store_true",
         help="Use z + velocity inputs from 'train_data_normalised_with_vel/'."
     )
-    parser.add_argument(
-        "--skip-test",
-        action="store_true",
-        help="Skip post-training test/metrics/video generation."
-    )
-    parser.add_argument(
-        "--skip-video",
-        action="store_true",
-        help="Run post-training test metrics without generating mp4 video."
-    )
-    parser.add_argument(
-        "--num-workers",
-        type=int,
-        default=None,
-        help="DataLoader worker count (default: auto from CPU count, capped at 8)."
-    )
     return parser
 
 # Entry point
@@ -889,7 +827,4 @@ if __name__ == '__main__':
     RESUME = bool(args.resume)
     RESUME_PATH = args.resume_path or RESUME_PATH
     USE_VEL = bool(args.vel)  # <<< NEW
-    RUN_TEST = not bool(args.skip_test)
-    SAVE_VIDEO = not bool(args.skip_video)
-    NUM_WORKERS = args.num_workers
     main()
