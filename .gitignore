@@ -14,6 +14,9 @@ noisyprediction_videos/*
 *.json
 !seq/
 !seq/noisyGRU_models_seq/
+!seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_in1/
+!seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_in1/epoch_1000.pth
+!seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_in1/epoch_1000.pt
 !seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024/epoch_500.pth
 !seq/noisyGRU_models_seq/noisy_D1_GRU_40_6_1024_1024_ritwik_trained_backup/epoch_500.pth
 *.log
