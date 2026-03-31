@@ -68,16 +68,16 @@ class GRUPredictionPublisher(Node):
 
         default_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                           'noisyGRU_models_seq',
-                                          'noisy_D1_GRU_40_6_1024_1024_ritwik_trained_backup')
+                                          'noisy_D1_GRU_40_6_1024_1024_in1')
 
         self.declare_parameter('model_path', default_model_path)
         self.declare_parameter('uav_pose_topic', '/mavros/vision_pose/pose')
         self.declare_parameter('platform_pose_topic', '/qualisys/ship_deck_platform/pose')
         self.declare_parameter('prediction_topic', '/stewart/prediction')
         self.declare_parameter('hz', 20.0)
-        self.declare_parameter('z_bias', 2.03) # 2.8479 for gazebo, 2.03 for exp
-        self.declare_parameter('scale_factor', 0.35)
-        self.declare_parameter('epoch', 480)
+        self.declare_parameter('z_bias', 1.983) # 2.8479 for gazebo, 2.03 for exp
+        self.declare_parameter('scale_factor', 0.32)
+        self.declare_parameter('epoch', 1000)
 
         self.model_path = self.get_parameter('model_path').value
         epoch_val = int(self.get_parameter('epoch').value) if self.get_parameter('epoch').value is not None else -1
@@ -192,7 +192,7 @@ class GRUPredictionPublisher(Node):
             yhat, self.h = self.model(x_tensor, self.h)
             self.h = [h_i.detach() for h_i in self.h]
             y_np = yhat.cpu().numpy().flatten()
-            y_np = y_np * self.scale_factor + self.z_bias
+            y_np = y_np * self.scale_factor 
 
         msg = Float32MultiArray()
         msg.data = y_np.astype(float).tolist()
