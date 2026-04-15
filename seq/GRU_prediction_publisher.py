@@ -96,7 +96,9 @@ class GRUPredictionPublisher(Node):
         seq_len, out_len, hidden_sizes = parse_model_path(resolved_path)
         self.seq_len = seq_len
         self.out_len = out_len
-        self.device = torch.device('cpu')  # lightweight inference
+        self.device = torch.device('cuda:0')  # lightweight inference
+        # self.device = torch.device('cpu')  # lightweight inference
+
 
         self.model = GRUModel(input_size=1, hidden_sizes=hidden_sizes, output_size=self.out_len).to(self.device)
         self._load_weights(resolved_path)
@@ -210,4 +212,5 @@ def main(args=None):
 
 
 if __name__ == '__main__':
+    print("cuda available:", torch.cuda.is_available(), "device:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu")
     main()
