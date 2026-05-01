@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # ROS2 publisher that streams a trained GRU model on live z measurements and publishes its forecast.
-# Input x is built exactly like mca_prediction_publisher: x = (z_uav - 2.8479 - (z_uav - z_plat)) / scale.
+# Input x is built from either:
+# - Qualisys platform pose: x = (z_uav - z_bias - (z_uav - z_plat)) / scale
+# - Vision relative pose:   x = (z_uav - z_bias - z_rel) / scale
 
 import os
 import re
@@ -19,6 +21,7 @@ from rclpy.qos import (
 )
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Float32MultiArray
+from precision_landing_using_vision_msgs.msg import LandingTargetVision
 
 
 def parse_model_path(model_path: str, name_rate_hz: int = 20):
@@ -73,7 +76,9 @@ class GRUPredictionPublisher(Node):
         self.declare_parameter('model_path', default_model_path)
         self.declare_parameter('uav_pose_topic', '/mavros/vision_pose/pose')
         self.declare_parameter('platform_pose_topic', '/qualisys/ship_deck_platform/pose')
+        self.declare_parameter('ar_pose_topic', '/ar_pose/raw')
         self.declare_parameter('prediction_topic', '/stewart/prediction')
+        self.declare_parameter('use_vision', True)
         self.declare_parameter('hz', 20.0)
         self.declare_parameter('z_bias', 1.983) # 2.8479 for gazebo, 2.03 for exp
         self.declare_parameter('scale_factor', 0.32)
@@ -84,7 +89,9 @@ class GRUPredictionPublisher(Node):
         self.model_epoch = epoch_val if epoch_val >= 0 else None
         self.uav_pose_topic = self.get_parameter('uav_pose_topic').value
         self.platform_pose_topic = self.get_parameter('platform_pose_topic').value
+        self.ar_pose_topic = self.get_parameter('ar_pose_topic').value
         self.pred_topic = self.get_parameter('prediction_topic').value
+        self.use_vision = bool(self.get_parameter('use_vision').value)
         self.hz = float(self.get_parameter('hz').value)
         self.z_bias = float(self.get_parameter('z_bias').value)
         self.scale_factor = float(self.get_parameter('scale_factor').value)
@@ -111,6 +118,7 @@ class GRUPredictionPublisher(Node):
         # State
         self.last_uav_z = None
         self.last_plat_z = None
+        self.last_rel_z = None
 
         io_qos = QoSProfile(
             reliability=QoSReliabilityPolicy.BEST_EFFORT,
@@ -121,13 +129,18 @@ class GRUPredictionPublisher(Node):
 
         self.pred_pub = self.create_publisher(Float32MultiArray, self.pred_topic, 10)
         self.create_subscription(PoseStamped, self.uav_pose_topic, self._cb_uav, io_qos)
-        self.create_subscription(PoseStamped, self.platform_pose_topic, self._cb_plat, io_qos)
+        if self.use_vision:
+            self.create_subscription(LandingTargetVision, self.ar_pose_topic, self._cb_ar_pose, io_qos)
+        else:
+            self.create_subscription(PoseStamped, self.platform_pose_topic, self._cb_plat, io_qos)
 
         dt = 1.0 / self.hz if self.hz > 0 else 0.05
         self.timer = self.create_timer(dt, self._tick)
 
         self.get_logger().info(
-            f"GRU prediction publisher started. Model={resolved_path}, seq_len={self.seq_len}, out_len={self.out_len}, hz={self.hz}")
+            f"GRU prediction publisher started. Model={resolved_path}, seq_len={self.seq_len}, "
+            f"out_len={self.out_len}, hz={self.hz}, "
+            f"x_source={'ar_pose' if self.use_vision else 'platform_pose'}")
 
     def _load_weights(self, path: str):
         last_err = None
@@ -181,12 +194,19 @@ class GRUPredictionPublisher(Node):
     def _cb_plat(self, msg: PoseStamped):
         self.last_plat_z = msg.pose.position.z
 
-    def _tick(self):
-        if self.last_uav_z is None or self.last_plat_z is None:
-            return
+    def _cb_ar_pose(self, msg: LandingTargetVision):
+        self.last_rel_z = msg.pose.position.z
 
-        del_z = self.last_uav_z - self.last_plat_z
-        x_val = (self.last_uav_z - self.z_bias - del_z) / self.scale_factor
+    def _tick(self):
+        if self.use_vision:
+            if self.last_uav_z is None or self.last_rel_z is None:
+                return
+            x_val = (self.last_uav_z - self.z_bias - self.last_rel_z) / self.scale_factor
+        else:
+            if self.last_uav_z is None or self.last_plat_z is None:
+                return
+            del_z = self.last_uav_z - self.last_plat_z
+            x_val = (self.last_uav_z - self.z_bias - del_z) / self.scale_factor
 
         # Single-step streaming with hidden state
         x_tensor = torch.tensor([[[x_val]]], dtype=torch.float32, device=self.device)
