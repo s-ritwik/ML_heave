@@ -69,12 +69,13 @@ class Logger:
         self.terminal.flush()
         self.logfile.flush()
 
-# GPU selection (0 or 1)
-# GPU_INDEX = 0
-# os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
+# Preferred logical CUDA device index inside the current process.
+# If the requested index is unavailable, the script falls back to the first
+# visible CUDA device instead of crashing with "invalid device ordinal".
+GPU_INDEX = 0
 
-# Device
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# Device is finalized in __main__ after CLI args are parsed.
+device = torch.device('cpu')
 
 # Global data/config files
 CONFIG_FILE_PATH = 'model_configs_seq.txt'
@@ -253,12 +254,47 @@ def build_train_windows_1d(series, n, m):
 def now_str():
     return time.strftime('%Y-%m-%d %H:%M:%S')
 
+def configure_device(requested_gpu_index):
+    """
+    Resolve a usable torch.device from the requested logical GPU index.
+
+    Notes:
+    - This function does not rewrite CUDA_VISIBLE_DEVICES. If the caller or
+      shell has already restricted visible GPUs, indexing is interpreted within
+      that visible set.
+    - When the requested index is out of range, we fall back to cuda:0 so a
+      training run can proceed on single-GPU hosts.
+    """
+    if not torch.cuda.is_available():
+        return torch.device('cpu'), None, "CUDA not available; using CPU."
+
+    visible_gpu_count = torch.cuda.device_count()
+    if visible_gpu_count < 1:
+        return torch.device('cpu'), None, "CUDA is available but no visible GPUs were found; using CPU."
+
+    effective_gpu_index = 0 if requested_gpu_index is None else int(requested_gpu_index)
+    if effective_gpu_index < 0:
+        effective_gpu_index = 0
+
+    warning = None
+    if effective_gpu_index >= visible_gpu_count:
+        warning = (
+            f"Requested GPU_INDEX={effective_gpu_index}, but only {visible_gpu_count} "
+            f"CUDA device(s) are visible; falling back to cuda:0."
+        )
+        effective_gpu_index = 0
+
+    torch.cuda.set_device(effective_gpu_index)
+    return torch.device(f'cuda:{effective_gpu_index}'), effective_gpu_index, warning
+
 def write_global_hyperparams_log():
     """Write global, run-level hyperparameters once at start."""
     run_info = {
         "timestamp": now_str(),
         "gpu_index": GPU_INDEX,
         "torch_device": str(device),
+        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "visible_cuda_device_count": torch.cuda.device_count() if torch.cuda.is_available() else 0,
         "noise_std_default": NOISE_STD_DEFAULT,
         "meters_to_cm": METERS_TO_CM,
         "save_every_epochs": SAVE_EVERY,
@@ -907,7 +943,8 @@ def _build_argparser():
     parser.add_argument('--mca-energy-cutoff', type=float, default=0.01, help='Minor-subspace energy fraction.')
     parser.add_argument('--mca-P', type=int, default=None, help='Use exactly P minor components.')
     parser.add_argument('--mca-ridge', type=float, default=1e-6, help='Ridge for (B2^T B2 + λI).')
-    parser.add_argument('--GPU-index', type=int, default=0, help='GPU index to use (default: 0).')
+    parser.add_argument('--GPU-index', '--gpu-index', dest='GPU_index', type=int, default=None,
+                        help='Logical CUDA device index to use within the currently visible GPU set (default: 0).')
     return parser
 
 # Entry point
@@ -916,10 +953,11 @@ if __name__ == '__main__':
     # override globals before main() uses them
     RESUME = bool(args.resume)
     RESUME_PATH = args.resume_path or RESUME_PATH
-    GPU_INDEX = args.GPU_index or GPU_INDEX
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(GPU_INDEX)
-    print(f"Using GPU_INDEX={GPU_INDEX}", file=sys.__stdout__)
-    device = torch.device(f'cuda:{GPU_INDEX}' if torch.cuda.is_available() else 'cpu')
+    requested_gpu_index = args.GPU_index if args.GPU_index is not None else GPU_INDEX
+    device, GPU_INDEX, device_warning = configure_device(requested_gpu_index)
+    if device_warning:
+        print(device_warning, file=sys.__stdout__)
+    print(f"Using device={device} | GPU_INDEX={GPU_INDEX}", file=sys.__stdout__)
     USE_MCA = bool(args.use_mca)
     MCA_N = args.mca_n or MCA_N
     MCA_M = args.mca_m or MCA_M
