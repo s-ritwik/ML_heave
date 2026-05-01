@@ -1,0 +1,12 @@
+================================================================================
+[2026-03-19 12:51:52] Starting model: noisy_D1_GRU_40_6_2048_1024_in1
+Config: {"hidden_sizes": [2048, 1024], "sequence_length": 800, "output_size": 120, "x_seconds": 4, "w": 30.0, "learning_rate": 4e-05, "batch_size": 340, "epochs": 600}
+Device: cuda | GPU_INDEX=1
+Trainable parameters: 22,167,672
+noise_std=0.09, meters_to_cm=25
+Checkpoints every 20 epochs | Logs every 20 epochs
+Input size: 1 (z)
+run_test=True, save_video=True, num_workers=8
+Loss weights: w=30.0, jump_w=8.0, vel_w=3.0, acc_w=0.8, tail_obs=5, cont_warmup_epochs=80
+================================================================================
+[2026-03-19 12:51:53] RESUME=False | Starting fresh from epoch 1.
