@@ -91,7 +91,7 @@ TEST_FILE_PATH = os.path.join(TRAIN_MOCAP_DIR, 'D1H3_normalised.csv')
 NOISE_STD_DEFAULT = 0.05        # Gaussian noise std on inputs
 METERS_TO_CM      = 25          # conversion factor as used in the original code
 # MCA residual-learning controls (added)
-USE_MCA = False                 # if True, train GRU on residuals and add MCA baseline at test
+USE_MCA = True                  # if True, train GRU on residuals and add MCA baseline at test
 MCA_N = None                    # defaults to sequence_length if None
 MCA_M = None                    # defaults to output_size if None
 MCA_CENTER = True               # subtract per-time-offset mean on training windows
@@ -888,7 +888,19 @@ def _build_argparser():
         default="",
         help="Explicit checkpoint file (.pt or .pth) to resume from; overrides auto-detection."
     )
-    parser.add_argument('--use-mca', action='store_true', help='Enable MCA residual learning and inference.')
+    parser.add_argument(
+        '--use-mca',
+        dest='use_mca',
+        action='store_true',
+        default=USE_MCA,
+        help='Enable MCA residual learning and inference.'
+    )
+    parser.add_argument(
+        '--no-use-mca',
+        dest='use_mca',
+        action='store_false',
+        help='Disable MCA residual learning and inference.'
+    )
     parser.add_argument('--mca-n', type=int, default=None, help='MCA n past samples (default: sequence_length).')
     parser.add_argument('--mca-m', type=int, default=None, help='MCA m future samples (default: output_size).')
     parser.add_argument('--mca-center', action='store_true', default=True, help='Row-center windows for MCA.')
