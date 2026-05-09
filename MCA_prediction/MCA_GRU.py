@@ -26,6 +26,7 @@ import glob
 import json
 import time
 import math
+import gc
 import traceback
 from datetime import datetime
 import argparse
@@ -380,11 +381,11 @@ def _extract_epoch(path):
     m = re.search(r'epoch_(\d+)\.(pt|pth)$', os.path.basename(path))
     return int(m.group(1)) if m else None
 
-def find_latest_checkpoint_any(model_folder):
+def find_latest_checkpoint_any(model_folder, prefer='pt'):
     """
     Find newest checkpoint among *.pt and *.pth.
     Returns (path, kind, epoch) where kind in {'pt','pth'}; or (None, None, None).
-    Preference: higher epoch; if tie, prefer .pt over .pth.
+    Preference: higher epoch; if tie, prefer the checkpoint kind requested by `prefer`.
     """
     pts  = glob.glob(os.path.join(model_folder, "epoch_*.pt"))
     pths = glob.glob(os.path.join(model_folder, "epoch_*.pth"))
@@ -399,9 +400,23 @@ def find_latest_checkpoint_any(model_folder):
             candidates.append((ep, 'pth', p))
     if not candidates:
         return None, None, None
-    candidates.sort(key=lambda t: (t[0], 0 if t[1] == 'pt' else 1))  # epoch asc, pt before pth
+    candidates.sort(key=lambda t: (t[0], 1 if t[1] == prefer else 0))
     ep, kind, path = candidates[-1]
     return path, kind, ep
+
+def load_torch_file(path, map_location='cpu', weights_only=True):
+    """Use safe torch.load settings when the runtime supports them."""
+    try:
+        return torch.load(path, map_location=map_location, weights_only=weights_only)
+    except TypeError:
+        return torch.load(path, map_location=map_location)
+
+def optimizer_to_device(optimizer, device):
+    """Move optimizer state tensors onto the active device after CPU-side checkpoint load."""
+    for state in optimizer.state.values():
+        for key, value in state.items():
+            if isinstance(value, torch.Tensor):
+                state[key] = value.to(device)
 
 # -------------------------------------------------------------------------
 # ---------------------------- MODEL DEFINITION ---------------------------
@@ -462,6 +477,8 @@ sys.excepthook = log_exception
 # -------------------------------------------------------------------------
 
 def main():
+    global MCA_CACHE
+
     # Log global hyperparams
     write_global_hyperparams_log()
 
@@ -478,6 +495,18 @@ def main():
 
     # Iterate through model configurations
     for config_line in model_configs:
+        model = optimizer = scheduler = criterion = None
+        train_dataset = train_loader = None
+        train_data = windows = X_np = y_np = None
+        X_train = y_train = y_train_residual = None
+        train_windows_clean = X2_hat = y_train_residual_np = None
+        noise = X_train_noisy = None
+        ckpt = state_dict = None
+        fig = writer = None
+        h = output = val = input_tensor_noisy = None
+        mca_model = None
+        final_ckpt_display = None
+        MCA_CACHE = None
         try:
             # Parse and prepare config
             config = parse_config_line(config_line)
@@ -576,11 +605,21 @@ def main():
 
             # Dataset/loader
             train_dataset = TensorDataset(X_train_noisy, y_train)
-            train_loader  = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
+            train_loader  = DataLoader(
+                train_dataset,
+                batch_size=batch_size,
+                shuffle=True,
+                pin_memory=(device.type == 'cuda')
+            )
 
             if USE_MCA:
                 train_dataset = TensorDataset(X_train_noisy, y_train_residual)
-                train_loader  = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
+                train_loader  = DataLoader(
+                    train_dataset,
+                    batch_size=batch_size,
+                    shuffle=True,
+                    pin_memory=(device.type == 'cuda')
+                )
 
             # ------------------- RESUME (per-config) -------------------
             start_epoch = 1
@@ -597,17 +636,20 @@ def main():
 
                 if final_resume_path and final_resume_kind:
                     if final_resume_kind == 'pt':
-                        ckpt = torch.load(final_resume_path, map_location=device)
+                        ckpt = load_torch_file(final_resume_path, map_location='cpu', weights_only=True)
                         model.load_state_dict(ckpt["model_state_dict"])
                         optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+                        optimizer_to_device(optimizer, device)
                         if scheduler and ckpt.get("scheduler_state_dict"):
                             scheduler.load_state_dict(ckpt["scheduler_state_dict"])
                         stored_epoch = int(ckpt.get("epoch", final_resume_epoch or 0))
                         start_epoch = stored_epoch + 1
+                        ckpt = None
                     elif final_resume_kind == 'pth':
-                        state_dict = torch.load(final_resume_path, map_location=device)
+                        state_dict = load_torch_file(final_resume_path, map_location='cpu', weights_only=True)
                         model.load_state_dict(state_dict)
                         start_epoch = (final_resume_epoch + 1) if final_resume_epoch is not None else 1
+                        state_dict = None
 
                     with open(model_log_path, 'a') as mlog:
                         mlog.write(f"[{now_str()}] RESUME=True | Resuming from '{final_resume_path}' "
@@ -724,20 +766,25 @@ def main():
             training_time = time.time() - start_time
             print(f"Training completed for {model_name} in {training_time/60:.2f} minutes.", file=sys.__stdout__)
             # ---------------------------- Testing -----------------------------
-            # Prefer the newest .pt/.pth in this model folder
-            final_ckpt_path, final_kind, _ = find_latest_checkpoint_any(model_folder)
+            # For testing we only need model weights, so prefer .pth over .pt.
+            final_ckpt_path, final_kind, _ = find_latest_checkpoint_any(model_folder, prefer='pth')
             if final_ckpt_path and final_kind == 'pt':
-                ckpt = torch.load(final_ckpt_path, map_location=device)
+                ckpt = load_torch_file(final_ckpt_path, map_location='cpu', weights_only=True)
                 model.load_state_dict(ckpt["model_state_dict"])
                 final_ckpt_display = final_ckpt_path
+                ckpt = None
             elif final_ckpt_path and final_kind == 'pth':
-                model.load_state_dict(torch.load(final_ckpt_path, map_location=device))
+                state_dict = load_torch_file(final_ckpt_path, map_location='cpu', weights_only=True)
+                model.load_state_dict(state_dict)
                 final_ckpt_display = final_ckpt_path
+                state_dict = None
             else:
                 # fall back to weights of final epoch (expected to exist)
                 final_ckpt_pth = os.path.join(model_folder, f"epoch_{epochs}.pth")
-                model.load_state_dict(torch.load(final_ckpt_pth, map_location=device))
+                state_dict = load_torch_file(final_ckpt_pth, map_location='cpu', weights_only=True)
+                model.load_state_dict(state_dict)
                 final_ckpt_display = final_ckpt_pth
+                state_dict = None
 
             model.eval()
 
@@ -791,7 +838,6 @@ def main():
                     # ---------------- MCA baseline at inference (added) ----------------
                     if USE_MCA:
                         try:
-                            global MCA_CACHE
                             if MCA_CACHE is None:
                                 with open(os.path.join(model_folder, 'mca_model.json'), 'r') as fjson:
                                     _m = json.load(fjson)
@@ -871,6 +917,10 @@ def main():
 
                     writer.grab_frame()
 
+            plt.close(fig)
+            fig = None
+            writer = None
+
             # ----------------- Summaries -----------------
             avg_pred_time_ms = np.mean(prediction_times) * 1000.0 if prediction_times else float('nan')
             mean_abs_err_cm  = float(np.mean(absolute_errors)) if absolute_errors else float('nan')
@@ -906,6 +956,25 @@ def main():
         except Exception as e:
             # goes to run log file (stdout is redirected) and errors.log via excepthook
             print(f"Error processing config '{config_line}': {e}")
+        finally:
+            MCA_CACHE = None
+            plt.close('all')
+            h = output = val = input_tensor_noisy = None
+            fig = writer = None
+            ckpt = state_dict = None
+            train_loader = train_dataset = None
+            noise = X_train_noisy = None
+            X_train = y_train = y_train_residual = None
+            train_windows_clean = X2_hat = y_train_residual_np = None
+            train_data = windows = X_np = y_np = None
+            mca_model = None
+            optimizer = scheduler = criterion = None
+            model = None
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                if hasattr(torch.cuda, "ipc_collect"):
+                    torch.cuda.ipc_collect()
 
     summary_file.close()
 
